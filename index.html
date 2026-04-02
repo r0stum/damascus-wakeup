@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>موعد الاستيقاظ – دمشق</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-deep:      #050d1a;
+      --bg-mid:       #0a1628;
+      --bg-card:      #0d1f3c;
+      --bg-card2:     #0f2347;
+      --accent:       #4fc3f7;
+      --accent2:      #81d4fa;
+      --gold:         #f9c74f;
+      --gold2:        #ffd166;
+      --text-main:    #e8f4fd;
+      --text-sub:     #90b8d8;
+      --text-muted:   #4a7a9b;
+      --glow-blue:    rgba(79, 195, 247, 0.35);
+      --glow-gold:    rgba(249, 199, 79, 0.40);
+      --border:       rgba(79, 195, 247, 0.18);
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'Cairo', 'Segoe UI', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ─── Starfield Canvas ──────────────────────────────────────────────── */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── Gradient Overlay ──────────────────────────────────────────────── */
+    .bg-gradient {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(30, 80, 160, 0.45) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(10, 40, 100, 0.35) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ─── Layout ────────────────────────────────────────────────────────── */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 3rem;
+      gap: 1.5rem;
+    }
+
+    /* ─── Header ────────────────────────────────────────────────────────── */
+    header {
+      text-align: center;
+      padding-top: 0.5rem;
+    }
+
+    .header-icon {
+      font-size: 2.8rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 14px rgba(249, 199, 79, 0.7));
+      animation: moonFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes moonFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    .site-title {
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      font-weight: 700;
+      color: var(--text-sub);
+      letter-spacing: 0.02em;
+      margin-top: 0.4rem;
+    }
+
+    /* ─── Date Card ─────────────────────────────────────────────────────── */
+    .date-card {
+      background: rgba(13, 31, 60, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.9rem 2rem;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    .date-hijri {
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .date-gregorian {
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      color: var(--text-main);
+      font-weight: 700;
+      margin-top: 0.15rem;
+    }
+
+    .date-day {
+      font-size: clamp(0.8rem, 2vw, 0.9rem);
+      color: var(--text-sub);
+      margin-top: 0.1rem;
+    }
+
+    /* ─── Main Cards Grid ───────────────────────────────────────────────── */
+    .cards-row {
+      display: flex;
+      gap: 1.2rem;
+      width: 100%;
+      max-width: 680px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .info-card {
+      flex: 1 1 200px;
+      background: rgba(13, 31, 60, 0.75);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.4rem 1.5rem;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 30px rgba(0,0,0,0.45);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .info-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.55);
+    }
+
+    .card-label {
+      font-size: clamp(0.78rem, 2vw, 0.9rem);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-icon {
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+
+    .card-time {
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 18px var(--glow-blue);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card-time.isha { color: var(--accent2); text-shadow: 0 0 18px rgba(129,212,250,0.4); }
+
+    /* ─── Wake-up Hero ──────────────────────────────────────────────────── */
+    .wakeup-hero {
+      width: 100%;
+      max-width: 680px;
+      background: linear-gradient(135deg, rgba(10, 25, 55, 0.9) 0%, rgba(15, 35, 71, 0.9) 100%);
+      border: 1px solid rgba(249, 199, 79, 0.3);
+      border-radius: 28px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow:
+        0 0 0 1px rgba(249, 199, 79, 0.08),
+        0 8px 40px rgba(0,0,0,0.6),
+        0 0 80px rgba(249, 199, 79, 0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wakeup-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(249,199,79,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .wakeup-label {
+      font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.6rem;
+      opacity: 0.9;
+    }
+
+    .wakeup-sublabel {
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
+      color: var(--text-muted);
+      margin-bottom: 1.4rem;
+    }
+
+    /* Glowing clock display */
+    .clock-display {
+      display: inline-block;
+      font-size: clamp(4rem, 16vw, 7rem);
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      text-shadow:
+        0 0 20px var(--glow-gold),
+        0 0 50px rgba(249, 199, 79, 0.25),
+        0 0 100px rgba(249, 199, 79, 0.12);
+      animation: clockPulse 3s ease-in-out infinite;
+      position: relative;
+    }
+
+    @keyframes clockPulse {
+      0%, 100% { text-shadow: 0 0 20px var(--glow-gold), 0 0 50px rgba(249,199,79,0.25), 0 0 100px rgba(249,199,79,0.12); }
+      50%       { text-shadow: 0 0 30px rgba(249,199,79,0.6), 0 0 70px rgba(249,199,79,0.35), 0 0 120px rgba(249,199,79,0.18); }
+    }
+
+    .clock-ampm {
+      font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+      color: var(--gold2);
+      font-weight: 700;
+      opacity: 0.85;
+      line-height: 1;
+    }
+
+    .wakeup-note {
+      font-size: clamp(0.78rem, 2vw, 0.88rem);
+      color: var(--text-muted);
+      margin-top: 1rem;
+      direction: rtl;
+    }
+
+    .wakeup-note span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ─── Countdown Section ─────────────────────────────────────────────── */
+    .countdown-section {
+      width: 100%;
+      max-width: 680px;
+      background: rgba(10, 22, 40, 0.75);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 1.8rem 1.5rem;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 30px rgba(0,0,0,0.4);
+    }
+
+    .countdown-title {
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      color: var(--text-sub);
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+
+    .countdown-grid {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .countdown-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      min-width: 70px;
+    }
+
+    .countdown-value {
+      font-size: clamp(2rem, 7vw, 3rem);
+      font-weight: 900;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      background: rgba(79, 195, 247, 0.08);
+      border: 1px solid rgba(79, 195, 247, 0.2);
+      border-radius: 12px;
+      width: 80px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-shadow: 0 0 14px var(--glow-blue);
+      transition: color 0.3s;
+    }
+
+    .countdown-unit-label {
+      font-size: clamp(0.65rem, 1.8vw, 0.75rem);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .countdown-separator {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--text-muted);
+      align-self: center;
+      padding-bottom: 1.4rem;
+      opacity: 0.5;
+    }
+
+    .countdown-message {
+      margin-top: 1rem;
+      font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+      color: var(--text-muted);
+    }
+
+    .countdown-message.alert {
+      color: var(--gold);
+      font-weight: 700;
+      font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+    }
+
+    /* ─── Progress Bar ──────────────────────────────────────────────────── */
+    .progress-wrap {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(79, 195, 247, 0.1);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent2), var(--gold));
+      border-radius: 99px;
+      transition: width 1s linear;
+      box-shadow: 0 0 8px var(--glow-blue);
+    }
+
+    /* ─── Footer ────────────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding-top: 0.5rem;
+      opacity: 0.7;
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ─── Loading / Error States ────────────────────────────────────────── */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    .status-badge.loading {
+      background: rgba(79, 195, 247, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(79, 195, 247, 0.25);
+    }
+
+    .status-badge.success {
+      background: rgba(102, 187, 106, 0.12);
+      color: #81c784;
+      border: 1px solid rgba(102, 187, 106, 0.25);
+    }
+
+    .status-badge.error {
+      background: rgba(239, 83, 80, 0.12);
+      color: #ef9a9a;
+      border: 1px solid rgba(239, 83, 80, 0.25);
+    }
+
+    .spinner {
+      width: 10px; height: 10px;
+      border: 2px solid rgba(79,195,247,0.3);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Decorative Stars ──────────────────────────────────────────────── */
+    .deco-stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .deco-star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: var(--min-op, 0.2); transform: scale(1); }
+      50%       { opacity: var(--max-op, 0.9); transform: scale(1.3); }
+    }
+
+    /* ─── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .cards-row { gap: 0.8rem; }
+      .info-card { padding: 1.1rem 1rem; }
+      .wakeup-hero { padding: 2rem 1.2rem; }
+      .countdown-value { width: 64px; height: 60px; }
+      .countdown-unit { min-width: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Starfield canvas -->
+<canvas id="starfield"></canvas>
+
+<!-- Gradient overlay -->
+<div class="bg-gradient"></div>
+
+<!-- Decorative twinkling stars (CSS) -->
+<div class="deco-stars" id="decoStars"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="header-icon">🌙</div>
+    <div class="site-title">موعد الاستيقاظ · دمشق</div>
+    <div style="margin-top:0.6rem;" id="statusBadge">
+      <span class="status-badge loading"><span class="spinner"></span> جارٍ تحميل أوقات الصلاة…</span>
+    </div>
+  </header>
+
+  <!-- Date Card -->
+  <div class="date-card">
+    <div class="date-hijri" id="dateHijri">—</div>
+    <div class="date-gregorian" id="dateGregorian">—</div>
+    <div class="date-day" id="dateDay">—</div>
+  </div>
+
+  <!-- Isha + Offset info cards -->
+    <div class="cards-row">
+    <div class="info-card">
+      <span class="card-icon">🕌</span>
+      <div class="card-label">صلاة العشاء · دمشق</div>
+      <div style="display:inline-flex; align-items:center; gap:0.4rem; direction:ltr;">
+        <div class="card-time isha" id="ishaTime">—:—</div>
+        <span id="ishaAmPm" style="font-size:1.2rem; color:var(--accent2); font-weight:700; align-self:flex-end; padding-bottom:0.5rem;"></span>
+      </div>
+    </div>
+    <div class="info-card">
+      <span class="card-icon">⏱️</span>
+      <div class="card-label">الفارق الزمني</div>
+      <div class="card-time" style="font-size:1.6rem; color: var(--text-sub);">+ ٧ ساعات ٢٠ دقيقة</div>
+    </div>
+  </div>
+
+  <!-- Wake-up Hero -->
+  <div class="wakeup-hero">
+    <div class="wakeup-label">⏰ موعد استيقاظك غداً</div>
+    <div class="wakeup-sublabel" id="wakeupDate">—</div>
+    <div style="display:inline-flex; align-items:center; gap:0.4rem; direction:ltr;">
+      <span class="clock-display" id="wakeupTime">—:—</span>
+      <span class="clock-ampm" id="wakeupAmPm" style="align-self:flex-end; padding-bottom:0.5rem;"></span>
+    </div>
+    <div class="wakeup-note" id="wakeupNote">
+      العشاء <span id="wakeupNoteIsha">—</span> + ٧ ساعات و٢٠ دقيقة
+    </div>
+  </div>
+
+  <!-- Countdown -->
+  <div class="countdown-section">
+    <div class="countdown-title">⏳ الوقت المتبقي حتى موعد الاستيقاظ</div>
+    <div class="countdown-grid">
+      <div class="countdown-unit">
+        <div class="countdown-value" id="cdSeconds">--</div>
+        <div class="countdown-unit-label">ثانية</div>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-unit">
+        <div class="countdown-value" id="cdMinutes">--</div>
+        <div class="countdown-unit-label">دقيقة</div>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-unit">
+        <div class="countdown-value" id="cdHours">--</div>
+        <div class="countdown-unit-label">ساعة</div>
+      </div>
+    </div>
+    <div class="countdown-message" id="cdMessage">جارٍ الحساب…</div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>الآن</span>
+      <span id="progressPct">0%</span>
+      <span id="progressTarget">—</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    يتجدد تلقائياً كل يوم عند منتصف الليل &nbsp;·&nbsp;
+    البيانات من <a href="https://aladhan.com" target="_blank" rel="noopener">AlAdhan API</a>
+    &nbsp;·&nbsp; طريقة الحساب: أم القرى
+  </footer>
+
+</div><!-- /page-wrapper -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+/* ─── Constants ──────────────────────────────────────────────────────────── */
+const OFFSET_HOURS   = 7;
+const OFFSET_MINUTES = 20;
+const API_BASE = 'https://api.aladhan.com/v1/timingsByCity';
+
+/* ─── State ──────────────────────────────────────────────────────────────── */
+let wakeupDateTime = null;   // JS Date object for the target wake-up time
+let lastFetchedDate = null;  // 'YYYY-MM-DD' string to detect day change
+
+/* ─── Arabic helpers ─────────────────────────────────────────────────────── */
+const AR_DAYS = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو',
+                   'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+function toArabicNumerals(str) {
+  return String(str).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+}
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+function formatArabicDate(dateObj) {
+  const day   = AR_DAYS[dateObj.getDay()];
+  const d     = dateObj.getDate();
+  const month = AR_MONTHS[dateObj.getMonth()];
+  const year  = dateObj.getFullYear();
+  return `${day}، ${toArabicNumerals(d)} ${month} ${toArabicNumerals(year)}`;
+}
+
+function formatTime12(dateObj) {
+  let h = dateObj.getHours();
+  const m = pad2(dateObj.getMinutes());
+  const ampm = h >= 12 ? 'م' : 'ص';
+  h = h % 12 || 12;
+  return { display: `${toArabicNumerals(pad2(h))}:${toArabicNumerals(m)}`, ampm };
+}
+
+function formatTime24(h, m) {
+  return `${pad2(h)}:${pad2(m)}`;
+}
+
+function todayKey() {
+  const n = new Date();
+  return `${n.getFullYear()}-${pad2(n.getMonth()+1)}-${pad2(n.getDate())}`;
+}
+
+/* ─── Starfield Canvas ───────────────────────────────────────────────────── */
+(function initStarfield() {
+  const canvas = document.getElementById('starfield');
+  const ctx    = canvas.getContext('2d');
+  let stars    = [];
+  let W, H;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    buildStars();
+  }
+
+  function buildStars() {
+    stars = [];
+    const count = Math.floor((W * H) / 3500);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x:    Math.random() * W,
+        y:    Math.random() * H,
+        r:    Math.random() * 1.2 + 0.2,
+        base: Math.random() * 0.5 + 0.1,
+        amp:  Math.random() * 0.5 + 0.2,
+        spd:  Math.random() * 0.8 + 0.4,
+        off:  Math.random() * Math.PI * 2,
+      });
+    }
+  }
+
+  function draw(ts) {
+    ctx.clearRect(0, 0, W, H);
+    const t = ts / 1000;
+    for (const s of stars) {
+      const alpha = s.base + s.amp * Math.sin(s.spd * t + s.off);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  requestAnimationFrame(draw);
+})();
+
+/* ─── CSS Decorative Stars ───────────────────────────────────────────────── */
+(function spawnDecoStars() {
+  const container = document.getElementById('decoStars');
+  const count = 18;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'deco-star';
+    const size = Math.random() * 3 + 1.5;
+    el.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random()*100}%;
+      left:${Math.random()*100}%;
+      --dur:${(Math.random()*4+2).toFixed(1)}s;
+      --delay:-${(Math.random()*5).toFixed(1)}s;
+      --min-op:${(Math.random()*0.2+0.05).toFixed(2)};
+      --max-op:${(Math.random()*0.5+0.4).toFixed(2)};
+    `;
+    container.appendChild(el);
+  }
+})();
+
+/* ─── Fetch Prayer Times ─────────────────────────────────────────────────── */
+async function fetchPrayerTimes() {
+  setStatus('loading');
+  const today = new Date();
+  const dd    = pad2(today.getDate());
+  const mm    = pad2(today.getMonth() + 1);
+  const yyyy  = today.getFullYear();
+  const url   = `${API_BASE}/${dd}-${mm}-${yyyy}?city=Damascus&country=Syria&method=4`;
+
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const json = await resp.json();
+    if (json.code !== 200) throw new Error(json.status || 'API error');
+
+    const timings = json.data.timings;
+    const dateData = json.data.date;
+
+    processData(timings, dateData, today);
+    lastFetchedDate = todayKey();
+    setStatus('success');
+
+  } catch (err) {
+    console.error('Fetch error:', err);
+    setStatus('error', err.message);
+    // Retry after 30s
+    setTimeout(fetchPrayerTimes, 30000);
+  }
+}
+
+/* ─── Process & Render ───────────────────────────────────────────────────── */
+function processData(timings, dateData, today) {
+  /* --- Isha time --- */
+  const [ishaH, ishaM] = timings.Isha.split(':').map(Number);
+
+  /* --- Wake-up = Isha + 7h20m --- */
+  let wuH = ishaH + OFFSET_HOURS;
+  let wuM = ishaM + OFFSET_MINUTES;
+  if (wuM >= 60) { wuM -= 60; wuH += 1; }
+
+  /* Build wake-up Date object (may cross midnight → next day) */
+  const wuDate = new Date(today);
+  wuDate.setHours(wuH, wuM, 0, 0);
+  // If wake-up is earlier than now (already passed today), push to tomorrow
+  if (wuDate <= new Date()) {
+    wuDate.setDate(wuDate.getDate() + 1);
+  }
+  wakeupDateTime = wuDate;
+
+  /* --- Render dates --- */
+  // Hijri from API
+  const h = dateData.hijri;
+  document.getElementById('dateHijri').textContent =
+    `${toArabicNumerals(h.day)} ${h.month.ar} ${toArabicNumerals(h.year)} هـ`;
+
+  document.getElementById('dateGregorian').textContent = formatArabicDate(today);
+  document.getElementById('dateDay').textContent =
+    AR_DAYS[today.getDay()];
+
+  /* --- Render Isha --- */
+  const ishaDate = new Date(today);
+  ishaDate.setHours(ishaH, ishaM, 0, 0);
+  const { display: ishaDisplay, ampm: ishaAmPm } = formatTime12(ishaDate);
+  document.getElementById('ishaTime').textContent = ishaDisplay;
+  document.getElementById('ishaAmPm').textContent = ishaAmPm;
+
+  /* --- Render wake-up --- */
+  const wuNorm = wuH % 24;
+  const { display: wuDisplay, ampm } = formatTime12(wuDate);
+  document.getElementById('wakeupTime').textContent = wuDisplay;
+  document.getElementById('wakeupAmPm').textContent = ampm;
+
+  // Wake-up date label
+  const isNextDay = wuDate.getDate() !== today.getDate();
+  document.getElementById('wakeupDate').textContent =
+    isNextDay ? `صباح ${AR_DAYS[wuDate.getDay()]}` : 'اليوم';
+
+  // Note
+  document.getElementById('wakeupNoteIsha').textContent =
+    toArabicNumerals(formatTime24(ishaH, ishaM));
+
+  // Progress bar target label
+  document.getElementById('progressTarget').textContent =
+    toArabicNumerals(wuDisplay) + ' ' + ampm;
+}
+
+/* ─── Status Badge ───────────────────────────────────────────────────────── */
+function setStatus(type, msg) {
+  const el = document.getElementById('statusBadge');
+  if (type === 'loading') {
+    el.innerHTML = `<span class="status-badge loading"><span class="spinner"></span> جارٍ تحميل أوقات الصلاة…</span>`;
+  } else if (type === 'success') {
+    el.innerHTML = `<span class="status-badge success">✓ تم تحديث الأوقات بنجاح</span>`;
+  } else {
+    el.innerHTML = `<span class="status-badge error">⚠ خطأ في التحميل – سيُعاد المحاولة</span>`;
+  }
+}
+
+/* ─── Countdown Ticker ───────────────────────────────────────────────────── */
+function tick() {
+  if (!wakeupDateTime) return;
+
+  const now  = new Date();
+  const diff = wakeupDateTime - now;   // ms
+
+  if (diff <= 0) {
+    // Wake-up time reached!
+    document.getElementById('cdHours').textContent   = '٠٠';
+    document.getElementById('cdMinutes').textContent = '٠٠';
+    document.getElementById('cdSeconds').textContent = '٠٠';
+    const msg = document.getElementById('cdMessage');
+    msg.textContent = '🌅 حان وقت الاستيقاظ! صباح النور';
+    msg.className = 'countdown-message alert';
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressPct').textContent = '١٠٠٪';
+    return;
+  }
+
+  const totalSec = Math.floor(diff / 1000);
+  const hh = Math.floor(totalSec / 3600);
+  const mm = Math.floor((totalSec % 3600) / 60);
+  const ss = totalSec % 60;
+
+  document.getElementById('cdHours').textContent   = toArabicNumerals(pad2(hh));
+  document.getElementById('cdMinutes').textContent = toArabicNumerals(pad2(mm));
+  document.getElementById('cdSeconds').textContent = toArabicNumerals(pad2(ss));
+
+  // Countdown message
+  const msg = document.getElementById('cdMessage');
+  if (hh >= 8) {
+    msg.textContent = '🌙 لا تزال الليلة طويلة، استرح جيداً';
+  } else if (hh >= 4) {
+    msg.textContent = '😴 تبقّى بعض الوقت، نم هنيئاً';
+  } else if (hh >= 1) {
+    msg.textContent = '⏰ اقترب موعد الاستيقاظ، استعد';
+  } else if (mm >= 10) {
+    msg.textContent = '🔔 قريباً جداً! استعد للاستيقاظ';
+  } else {
+    msg.textContent = '🌅 لحظات ويحين موعد الاستيقاظ!';
+    msg.className = 'countdown-message alert';
+  }
+
+  /* Progress bar: from 24h window back to wake-up */
+  const windowMs = 24 * 60 * 60 * 1000;
+  const elapsed  = windowMs - diff;
+  const pct      = Math.max(0, Math.min(100, (elapsed / windowMs) * 100));
+  document.getElementById('progressFill').style.width = pct.toFixed(2) + '%';
+  document.getElementById('progressPct').textContent  = toArabicNumerals(Math.floor(pct)) + '٪';
+}
+
+/* ─── Midnight Refresh ───────────────────────────────────────────────────── */
+function scheduleMidnightRefresh() {
+  const now       = new Date();
+  const midnight  = new Date(now);
+  midnight.setHours(24, 0, 30, 0);   // 00:00:30 next day
+  const msUntil   = midnight - now;
+  setTimeout(() => {
+    fetchPrayerTimes();
+    scheduleMidnightRefresh();
+  }, msUntil);
+}
+
+/* ─── Day-change guard (in case tab is left open) ────────────────────────── */
+function dayChangeGuard() {
+  if (lastFetchedDate && lastFetchedDate !== todayKey()) {
+    fetchPrayerTimes();
+  }
+}
+
+/* ─── Boot ───────────────────────────────────────────────────────────────── */
+fetchPrayerTimes();
+setInterval(tick, 1000);
+setInterval(dayChangeGuard, 60000);
+scheduleMidnightRefresh();
+</script>
+</body>
+</html>
