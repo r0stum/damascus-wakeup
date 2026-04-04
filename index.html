@@ -12,6 +12,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
+      /* Dark Theme */
       --bg-deep:      #050d1a;
       --bg-mid:       #0a1628;
       --bg-card:      #0d1f3c;
@@ -26,17 +27,53 @@
       --glow-blue:    rgba(79, 195, 247, 0.35);
       --glow-gold:    rgba(249, 199, 79, 0.40);
       --border:       rgba(79, 195, 247, 0.18);
+
+      /* Light Theme */
+      --light-bg-deep:      #f0f2f5;
+      --light-bg-mid:       #ffffff;
+      --light-bg-card:      #ffffff;
+      --light-bg-card2:     #f8f9fa;
+      --light-accent:       #007bff;
+      --light-accent2:      #0056b3;
+      --light-gold:         #e9c46a;
+      --light-gold2:        #f4a261;
+      --light-text-main:    #333333;
+      --light-text-sub:     #6c757d;
+      --light-text-muted:   #adb5bd;
+      --light-glow-blue:    rgba(0, 123, 255, 0.15);
+      --light-glow-gold:    rgba(233, 196, 106, 0.20);
+      --light-border:       rgba(0, 123, 255, 0.1);
+    }
+
+    body.light-mode {
+      --bg-deep:      var(--light-bg-deep);
+      --bg-mid:       var(--light-bg-mid);
+      --bg-card:      var(--light-bg-card);
+      --bg-card2:     var(--light-bg-card2);
+      --accent:       var(--light-accent);
+      --accent2:      var(--light-accent2);
+      --gold:         var(--light-gold);
+      --gold2:        var(--light-gold2);
+      --text-main:    var(--light-text-main);
+      --text-sub:     var(--light-text-sub);
+      --text-muted:   var(--light-text-muted);
+      --glow-blue:    var(--light-glow-blue);
+      --glow-gold:    var(--light-glow-gold);
+      --border:       var(--light-border);
     }
 
     html { font-size: 16px; }
 
     body {
-      font-family: 'Cairo', 'Segoe UI', sans-serif;
+      font-family: Cairo, "Segoe UI", sans-serif;
       background: var(--bg-deep);
       color: var(--text-main);
       min-height: 100vh;
       overflow-x: hidden;
+      touch-action: manipulation;
       position: relative;
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     /* ─── Starfield Canvas ──────────────────────────────────────────────── */
@@ -61,6 +98,8 @@
     /* ─── Layout ────────────────────────────────────────────────────────── */
     .page-wrapper {
       position: relative;
+      will-change: transform;
+      transform: translateZ(0);
       z-index: 1;
       min-height: 100vh;
       display: flex;
@@ -68,12 +107,16 @@
       align-items: center;
       padding: 2rem 1rem 3rem;
       gap: 1.5rem;
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     /* ─── Header ────────────────────────────────────────────────────────── */
     header {
       text-align: center;
       padding-top: 0.5rem;
+      position: relative; /* For settings button positioning */
+      width: 100%;
     }
 
     .header-icon {
@@ -103,7 +146,13 @@
       border-radius: 16px;
       padding: 0.9rem 2rem;
       text-align: center;
-      backdrop-filter: blur(12px);
+      /* backdrop-filter: blur(12px); */
+      @supports (backdrop-filter: blur(1px)) {
+        backdrop-filter: blur(12px);
+      }
+      @media (max-width: 768px) {
+        background: rgba(13, 31, 60, 0.9); /* Adjusted for date-card and info-card */
+      }
       box-shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
 
@@ -143,9 +192,17 @@
       border-radius: 20px;
       padding: 1.4rem 1.5rem;
       text-align: center;
-      backdrop-filter: blur(12px);
+      /* backdrop-filter: blur(12px); */
+      @supports (backdrop-filter: blur(1px)) {
+        backdrop-filter: blur(12px);
+      }
+      @media (max-width: 768px) {
+        background: rgba(13, 31, 60, 0.9); /* Adjusted for date-card and info-card */
+      }
       box-shadow: 0 6px 30px rgba(0,0,0,0.45);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     .info-card:hover {
@@ -188,17 +245,25 @@
       border-radius: 28px;
       padding: 2.5rem 2rem;
       text-align: center;
-      backdrop-filter: blur(16px);
+      /* backdrop-filter: blur(16px); */
+      @supports (backdrop-filter: blur(1px)) {
+        backdrop-filter: blur(16px);
+      }
+      @media (max-width: 768px) {
+        background: linear-gradient(135deg, rgba(10, 25, 55, 0.95) 0%, rgba(15, 35, 71, 0.95) 100%);
+      }
       box-shadow:
         0 0 0 1px rgba(249, 199, 79, 0.08),
         0 8px 40px rgba(0,0,0,0.6),
         0 0 80px rgba(249, 199, 79, 0.06);
       position: relative;
+      will-change: transform;
+      transform: translateZ(0);
       overflow: hidden;
     }
 
     .wakeup-hero::before {
-      content: '';
+      content: "";
       position: absolute;
       inset: 0;
       background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(249,199,79,0.07) 0%, transparent 70%);
@@ -235,6 +300,8 @@
         0 0 100px rgba(249, 199, 79, 0.12);
       animation: clockPulse 3s ease-in-out infinite;
       position: relative;
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     @keyframes clockPulse {
@@ -271,7 +338,13 @@
       border-radius: 22px;
       padding: 1.8rem 1.5rem;
       text-align: center;
-      backdrop-filter: blur(12px);
+      /* backdrop-filter: blur(12px); */
+      @supports (backdrop-filter: blur(1px)) {
+        backdrop-filter: blur(12px);
+      }
+      @media (max-width: 768px) {
+        background: rgba(13, 31, 60, 0.9); /* Adjusted for date-card and info-card */
+      }
       box-shadow: 0 6px 30px rgba(0,0,0,0.4);
     }
 
@@ -359,492 +432,881 @@
       width: 100%;
       height: 6px;
       background: rgba(79, 195, 247, 0.1);
-      border-radius: 99px;
+      border-radius: 999px;
       overflow: hidden;
     }
 
-    .progress-bar-fill {
+    .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--accent2), var(--gold));
-      border-radius: 99px;
-      transition: width 1s linear;
-      box-shadow: 0 0 8px var(--glow-blue);
+      width: 0%;
+      background: linear-gradient(to right, var(--accent2), var(--accent));
+      border-radius: 999px;
+      transition: width 0.5s ease-out;
     }
 
-    /* ─── Footer ────────────────────────────────────────────────────────── */
-    footer {
-      text-align: center;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      padding-top: 0.5rem;
-      opacity: 0.7;
-    }
-
-    footer a { color: var(--accent); text-decoration: none; }
-
-    /* ─── Loading / Error States ────────────────────────────────────────── */
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.78rem;
-      padding: 0.3rem 0.8rem;
-      border-radius: 99px;
-      font-weight: 600;
-    }
-
-    .status-badge.loading {
-      background: rgba(79, 195, 247, 0.12);
-      color: var(--accent);
-      border: 1px solid rgba(79, 195, 247, 0.25);
-    }
-
-    .status-badge.success {
-      background: rgba(102, 187, 106, 0.12);
-      color: #81c784;
-      border: 1px solid rgba(102, 187, 106, 0.25);
-    }
-
-    .status-badge.error {
-      background: rgba(239, 83, 80, 0.12);
-      color: #ef9a9a;
-      border: 1px solid rgba(239, 83, 80, 0.25);
-    }
-
-    .spinner {
-      width: 10px; height: 10px;
-      border: 2px solid rgba(79,195,247,0.3);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      display: inline-block;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ─── Decorative Stars ──────────────────────────────────────────────── */
-    .deco-stars {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .deco-star {
+    /* ─── Settings Panel ────────────────────────────────────────────────── */
+    .settings-btn {
       position: absolute;
-      background: white;
+      top: 1.5rem;
+      left: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       border-radius: 50%;
-      animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-main);
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .settings-btn:hover { background: var(--bg-card2); }
+
+    .settings-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .settings-panel.open {
+      opacity: 1;
+      visibility: visible;
     }
 
-    @keyframes twinkle {
-      0%, 100% { opacity: var(--min-op, 0.2); transform: scale(1); }
-      50%       { opacity: var(--max-op, 0.9); transform: scale(1.3); }
+    .settings-content {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      color: var(--text-main);
     }
 
-    /* ─── Responsive ────────────────────────────────────────────────────── */
+    .close-settings-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .settings-content h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+    }
+
+    .setting-group {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .setting-group:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+
+    .setting-group h3 {
+      font-size: 1.1rem;
+      color: var(--text-sub);
+      margin-bottom: 0.8rem;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+    .toggle-label {
+      width: 120px;
+      height: 36px;
+      background: var(--bg-mid);
+      border-radius: 18px;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 5px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .toggle-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      z-index: 1;
+      transition: color 0.3s ease;
+    }
+    .toggle-handle {
+      position: absolute;
+      width: 50px;
+      height: 30px;
+      background: var(--accent);
+      border-radius: 15px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    }
+    #langToggle:checked + .toggle-label .toggle-handle { transform: translateX(calc(100% - 10px)); }
+    #themeToggle:checked + .toggle-label .toggle-handle { transform: translateX(calc(100% - 10px)); }
+
+    /* Adjust text color based on toggle state */
+    #langToggle:not(:checked) + .toggle-label .toggle-text:first-child { color: var(--text-main); }
+    #langToggle:checked + .toggle-label .toggle-text:last-child { color: var(--text-main); }
+    #themeToggle:not(:checked) + .toggle-label .toggle-text:first-child { color: var(--text-main); }
+    #themeToggle:checked + .toggle-label .toggle-text:last-child { color: var(--text-main); }
+
+    /* Dropdowns */
+    .setting-group select {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      background: var(--bg-mid);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 1rem;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%2390b8d8\'%3E%3Cpath d=\'M7 10l5 5 5-5z\'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: left 0.8rem center;
+      background-size: 1.2rem;
+      padding-left: 2.5rem; /* Space for icon */
+    }
+    html[dir="ltr"] .setting-group select {
+      background-position: right 0.8rem center;
+      padding-left: 0.6rem;
+      padding-right: 2.5rem;
+    }
+    .setting-group select:focus { outline: none; border-color: var(--accent); }
+    .setting-group label { display: block; margin-top: 1rem; color: var(--text-sub); font-size: 0.9rem; }
+
+    /* LTR adjustments */
+    html[dir="ltr"] .settings-btn { left: auto; right: 1.5rem; }
+    html[dir="ltr"] .close-settings-btn { right: auto; left: 1rem; }
+    html[dir="ltr"] .toggle-label .toggle-text:first-child { order: 2; }
+    html[dir="ltr"] .toggle-label .toggle-text:last-child { order: 1; }
+    html[dir="ltr"] #langToggle:checked + .toggle-label .toggle-handle { transform: translateX(0); }
+    html[dir="ltr"] #themeToggle:checked + .toggle-label .toggle-handle { transform: translateX(0); }
+    html[dir="ltr"] #langToggle:not(:checked) + .toggle-label .toggle-text:first-child { color: var(--text-main); }
+    html[dir="ltr"] #langToggle:not(:checked) + .toggle-label .toggle-text:last-child { color: var(--text-muted); }
+    html[dir="ltr"] #themeToggle:not(:checked) + .toggle-label .toggle-text:first-child { color: var(--text-main); }
+    html[dir="ltr"] #themeToggle:not(:checked) + .toggle-label .toggle-text:last-child { color: var(--text-muted); }
+    html[dir="ltr"] .countdown-unit-label { text-align: left; }
+    html[dir="ltr"] .countdown-separator { margin: 0 0.2rem; }
+    html[dir="ltr"] .wakeup-note { direction: ltr; }
+
+    /* Media queries for settings panel responsiveness */
     @media (max-width: 480px) {
-      .cards-row { gap: 0.8rem; }
-      .info-card { padding: 1.1rem 1rem; }
-      .wakeup-hero { padding: 2rem 1.2rem; }
-      .countdown-value { width: 64px; height: 60px; }
-      .countdown-unit { min-width: 60px; }
+      .settings-content { padding: 1.5rem; }
+      .settings-btn { top: 1rem; left: 1rem; width: 36px; height: 36px; font-size: 1.3rem; }
+      html[dir="ltr"] .settings-btn { right: 1rem; left: auto; }
     }
   </style>
 </head>
 <body>
+  <canvas id="starfield"></canvas>
+  <div class="bg-gradient"></div>
+  <div id="decoStars"></div>
 
-<!-- Starfield canvas -->
-<canvas id="starfield"></canvas>
+  <div class="page-wrapper">
+    <header>
+      <div class="header-icon">🌙</div>
+      <h1 class="site-title" id="siteTitle">موعد الاستيقاظ • دمشق</h1>
+      <div id="statusBadge"></div>
+      <button id="settingsBtn" class="settings-btn" aria-label="Settings">
+        ⚙️
+      </button>
+    </header>
 
-<!-- Gradient overlay -->
-<div class="bg-gradient"></div>
+    <div id="settingsPanel" class="settings-panel">
+      <div class="settings-content">
+        <button id="closeSettingsBtn" class="close-settings-btn">✖️</button>
+        <h2 id="settingsTitle">الإعدادات</h2>
 
-<!-- Decorative twinkling stars (CSS) -->
-<div class="deco-stars" id="decoStars"></div>
+        <div class="setting-group">
+          <h3 id="langSettingTitle">اللغة</h3>
+          <div class="toggle-switch">
+            <input type="checkbox" id="langToggle" hidden />
+            <label for="langToggle" class="toggle-label">
+              <span class="toggle-text" data-lang-key="english">English</span>
+              <span class="toggle-text" data-lang-key="arabic">العربية</span>
+              <span class="toggle-handle"></span>
+            </label>
+          </div>
+        </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<div class="page-wrapper">
+        <div class="setting-group">
+          <h3 id="themeSettingTitle">الوضع</h3>
+          <div class="toggle-switch">
+            <input type="checkbox" id="themeToggle" hidden />
+            <label for="themeToggle" class="toggle-label">
+              <span class="toggle-text" data-lang-key="lightMode">☀️</span>
+              <span class="toggle-text" data-lang-key="darkMode">🌙</span>
+              <span class="toggle-handle"></span>
+            </label>
+          </div>
+        </div>
 
-  <!-- Header -->
-  <header>
-    <div class="header-icon">🌙</div>
-    <div class="site-title">موعد الاستيقاظ · دمشق</div>
-    <div style="margin-top:0.6rem;" id="statusBadge">
-      <span class="status-badge loading"><span class="spinner"></span> جارٍ تحميل أوقات الصلاة…</span>
+        <div class="setting-group">
+          <h3 id="locationSettingTitle">الموقع</h3>
+          <label for="countrySelect" id="countryLabel">الدولة:</label>
+          <select id="countrySelect"></select>
+          <label for="citySelect" id="cityLabel">المدينة:</label>
+          <select id="citySelect"></select>
+        </div>
+      </div>
     </div>
-  </header>
 
-  <!-- Date Card -->
-  <div class="date-card">
-    <div class="date-hijri" id="dateHijri">—</div>
-    <div class="date-gregorian" id="dateGregorian">—</div>
-    <div class="date-day" id="dateDay">—</div>
-  </div>
+    <div class="date-card">
+      <div id="dateHijri" class="date-hijri"></div>
+      <div id="dateGregorian" class="date-gregorian"></div>
+      <div id="dateDay" class="date-day"></div>
+    </div>
 
-  <!-- Isha + Offset info cards -->
     <div class="cards-row">
-    <div class="info-card">
-      <span class="card-icon">🕌</span>
-      <div class="card-label">صلاة العشاء · دمشق</div>
-      <div style="display:inline-flex; align-items:center; gap:0.4rem; direction:ltr;">
-        <div class="card-time isha" id="ishaTime">—:—</div>
-        <span id="ishaAmPm" style="font-size:1.2rem; color:var(--accent2); font-weight:700; align-self:flex-end; padding-bottom:0.5rem;"></span>
+      <div class="info-card">
+        <span class="card-icon">⏰</span>
+        <div class="card-label" id="ishaLabel">صلاة العشاء - دمشق</div>
+        <div class="card-time isha">
+          <span id="ishaTime">--:--</span>
+          <span id="ishaAmPm" class="clock-ampm"></span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <span class="card-icon">⏳</span>
+        <div class="card-label" id="offsetLabel">الفارق الزمني</div>
+        <div class="card-time">+ ٧ ساعات ٢٠ دقيقة</div>
       </div>
     </div>
-    <div class="info-card">
-      <span class="card-icon">⏱️</span>
-      <div class="card-label">الفارق الزمني</div>
-      <div class="card-time" style="font-size:1.6rem; color: var(--text-sub);">+ ٧ ساعات ٢٠ دقيقة</div>
-    </div>
-  </div>
 
-  <!-- Wake-up Hero -->
-  <div class="wakeup-hero">
-    <div class="wakeup-label">⏰ موعد استيقاظك غداً</div>
-    <div class="wakeup-sublabel" id="wakeupDate">—</div>
-    <div style="display:inline-flex; align-items:center; gap:0.4rem; direction:ltr;">
-      <span class="clock-display" id="wakeupTime">—:—</span>
-      <span class="clock-ampm" id="wakeupAmPm" style="align-self:flex-end; padding-bottom:0.5rem;"></span>
-    </div>
-    <div class="wakeup-note" id="wakeupNote">
-      العشاء <span id="wakeupNoteIsha">—</span> + ٧ ساعات و٢٠ دقيقة
-    </div>
-  </div>
-
-  <!-- Countdown -->
-  <div class="countdown-section">
-    <div class="countdown-title">⏳ الوقت المتبقي حتى موعد الاستيقاظ</div>
-    <div class="countdown-grid">
-      <div class="countdown-unit">
-        <div class="countdown-value" id="cdSeconds">--</div>
-        <div class="countdown-unit-label">ثانية</div>
+    <div class="wakeup-hero">
+      <div class="wakeup-label" id="wakeupHeroLabel">موعد استيقاظك غداً</div>
+      <div class="wakeup-sublabel" id="wakeupHeroSublabel"></div>
+      <div class="clock-display">
+        <span id="wakeupTime">--:--</span>
+        <span id="wakeupAmPm" class="clock-ampm"></span>
       </div>
-      <div class="countdown-separator">:</div>
-      <div class="countdown-unit">
-        <div class="countdown-value" id="cdMinutes">--</div>
-        <div class="countdown-unit-label">دقيقة</div>
-      </div>
-      <div class="countdown-separator">:</div>
-      <div class="countdown-unit">
-        <div class="countdown-value" id="cdHours">--</div>
-        <div class="countdown-unit-label">ساعة</div>
+      <div class="wakeup-note" id="wakeupNote">
+        <span id="wakeupNoteIsha">--:--</span> + ٧ ساعات و ٢٠ دقيقة
       </div>
     </div>
-    <div class="countdown-message" id="cdMessage">جارٍ الحساب…</div>
+
+    <div class="countdown-section">
+      <div class="countdown-title" id="countdownTitle">الوقت المتبقي حتى موعد الاستيقاظ</div>
+      <div class="countdown-grid">
+        <div class="countdown-unit">
+          <div id="cdHours" class="countdown-value">--</div>
+          <div class="countdown-unit-label" id="cdHoursLabel">ساعة</div>
+        </div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit">
+          <div id="cdMinutes" class="countdown-value">--</div>
+          <div class="countdown-unit-label" id="cdMinutesLabel">دقيقة</div>
+        </div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit">
+          <div id="cdSeconds" class="countdown-value">--</div>
+          <div class="countdown-unit-label" id="cdSecondsLabel">ثانية</div>
+        </div>
+      </div>
+      <div id="cdMessage" class="countdown-message">جارٍ الحساب...</div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressCurrent">الآن</span>
+        <span id="progressPct">٠٪</span>
+        <span id="progressTarget">--:--</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <span id="footerText">تُحدّث الأوقات تلقائياً كل يوم عند منتصف الليل. البيانات من <a href="https://aladhan.com/prayer-times-api" target="_blank">AlAdhan API</a>. طريقة الحساب أم القرى.</span>
+    </footer>
   </div>
 
-  <!-- Progress bar -->
-  <div class="progress-wrap">
-    <div class="progress-label">
-      <span>الآن</span>
-      <span id="progressPct">0%</span>
-      <span id="progressTarget">—</span>
-    </div>
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
-    </div>
-  </div>
+  <script>
+    const API_BASE = 'https://api.aladhan.com/v1/timingsByCity';
+    const OFFSET_HOURS = 7;
+    const OFFSET_MINUTES = 20;
 
-  <!-- Footer -->
-  <footer>
-    يتجدد تلقائياً كل يوم عند منتصف الليل &nbsp;·&nbsp;
-    البيانات من <a href="https://aladhan.com" target="_blank" rel="noopener">AlAdhan API</a>
-    &nbsp;·&nbsp; طريقة الحساب: أم القرى
-  </footer>
+    /* ─── State ──────────────────────────────────────────────────────────────── */
+    let wakeupDateTime = null;   // JS Date object for the target wake-up time
+    let lastFetchedDate = null;  // 'YYYY-MM-DD' string to detect day change
+    let currentLanguage = localStorage.getItem('language') || 'ar'; // 'ar' or 'en'
+    let currentTheme = localStorage.getItem('theme') || 'dark'; // 'dark' or 'light'
+    let selectedCountry = localStorage.getItem('country') || 'Syria';
+    let selectedCity = localStorage.getItem('city') || 'Damascus';
 
-</div><!-- /page-wrapper -->
+    const translations = {
+      ar: {
+        siteTitle: 'موعد الاستيقاظ',
+        settingsTitle: 'الإعدادات',
+        langSettingTitle: 'اللغة',
+        themeSettingTitle: 'الوضع',
+        locationSettingTitle: 'الموقع',
+        english: 'English',
+        arabic: 'العربية',
+        lightMode: '☀️',
+        darkMode: '🌙',
+        countryLabel: 'الدولة:',
+        cityLabel: 'المدينة:',
+        ishaLabel: 'صلاة العشاء',
+        offsetLabel: 'الفارق الزمني',
+        wakeupHeroLabel: 'موعد استيقاظك غداً',
+        wakeupHeroSublabel: '', // Will be dynamically set
+        countdownTitle: 'الوقت المتبقي حتى موعد الاستيقاظ',
+        cdHoursLabel: 'ساعة',
+        cdMinutesLabel: 'دقيقة',
+        cdSecondsLabel: 'ثانية',
+        cdMessageCalculating: 'جارٍ الحساب...',
+        cdMessageLongNight: '🌙 لا تزال الليلة طويلة، استرح جيداً',
+        cdMessageSomeTimeLeft: '😴 تبقّى بعض الوقت، نم هنيئاً',
+        cdMessageApproaching: '⏰ اقترب موعد الاستيقاظ، استعد',
+        cdMessageVerySoon: '🔔 قريباً جداً! استعد للاستيقاظ',
+        cdMessageWakeUp: '🌅 حان وقت الاستيقاظ! صباح النور',
+        progressCurrent: 'الآن',
+        footerText: 'تُحدّث الأوقات تلقائياً كل يوم عند منتصف الليل. البيانات من <a href="https://aladhan.com/prayer-times-api" target="_blank">AlAdhan API</a>. طريقة الحساب أم القرى.',
+        statusLoading: 'جارٍ تحميل أوقات الصلاة...',
+        statusSuccess: '✓ تم تحديث الأوقات بنجاح',
+        statusError: '⚠ خطأ في التحميل – سيُعاد المحاولة',
+        tomorrowMorning: 'صباح الغد',
+        today: 'اليوم',
+        morning: 'صباح',
+        evening: 'مساء',
+        nextDayPrefix: 'صباح',
+        nextDaySuffix: '',
+        hoursOffset: 'ساعات',
+        minutesOffset: 'دقيقة',
+        and: 'و',
+      },
+      en: {
+        siteTitle: 'Wake-up Time',
+        settingsTitle: 'Settings',
+        langSettingTitle: 'Language',
+        themeSettingTitle: 'Theme',
+        locationSettingTitle: 'Location',
+        english: 'English',
+        arabic: 'العربية',
+        lightMode: '☀️',
+        darkMode: '🌙',
+        countryLabel: 'Country:',
+        cityLabel: 'City:',
+        ishaLabel: 'Isha Prayer',
+        offsetLabel: 'Time Offset',
+        wakeupHeroLabel: 'Your Wake-up Time Tomorrow',
+        wakeupHeroSublabel: '',
+        countdownTitle: 'Time Remaining until Wake-up',
+        cdHoursLabel: 'Hour(s)',
+        cdMinutesLabel: 'Minute(s)',
+        cdSecondsLabel: 'Second(s)',
+        cdMessageCalculating: 'Calculating...',
+        cdMessageLongNight: '🌙 Still a long night, rest well',
+        cdMessageSomeTimeLeft: '😴 Some time left, sleep soundly',
+        cdMessageApproaching: '⏰ Wake-up time approaching, get ready',
+        cdMessageVerySoon: '🔔 Very soon! Get ready to wake up',
+        cdMessageWakeUp: '🌅 Time to wake up! Good morning',
+        progressCurrent: 'Now',
+        footerText: 'Times are updated automatically every day at midnight. Data from <a href="https://aladhan.com/prayer-times-api" target="_blank">AlAdhan API</a>. Calculation method: Umm Al-Qura.',
+        statusLoading: 'Loading prayer times...',
+        statusSuccess: '✓ Times updated successfully',
+        statusError: '⚠ Load error - will retry',
+        tomorrowMorning: 'Tomorrow Morning',
+        today: 'Today',
+        morning: 'AM',
+        evening: 'PM',
+        nextDayPrefix: 'Morning',
+        nextDaySuffix: '',
+        hoursOffset: 'hours',
+        minutesOffset: 'minutes',
+        and: 'and',
+      }
+    };
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<script>
-/* ─── Constants ──────────────────────────────────────────────────────────── */
-const OFFSET_HOURS   = 7;
-const OFFSET_MINUTES = 20;
-const API_BASE = 'https://api.aladhan.com/v1/timingsByCity';
+    /* ─── Arabic helpers ─────────────────────────────────────────────────────── */
+    const AR_DAYS = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const EN_DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو',
+                       'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    const EN_MONTHS = ['January','February','March','April','May','June',
+                       'July','August','September','October','November','December'];
 
-/* ─── State ──────────────────────────────────────────────────────────────── */
-let wakeupDateTime = null;   // JS Date object for the target wake-up time
-let lastFetchedDate = null;  // 'YYYY-MM-DD' string to detect day change
+    function toArabicNumerals(str) {
+      if (currentLanguage === 'en') return str;
+      return String(str).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    }
 
-/* ─── Arabic helpers ─────────────────────────────────────────────────────── */
-const AR_DAYS = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو',
-                   'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    function pad2(n) { return String(n).padStart(2, '0'); }
 
-function toArabicNumerals(str) {
-  return String(str).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
-}
+    function formatArabicDate(dateObj) {
+      const day   = AR_DAYS[dateObj.getDay()];
+      const d     = dateObj.getDate();
+      const month = AR_MONTHS[dateObj.getMonth()];
+      const year  = dateObj.getFullYear();
+      return `${day}، ${toArabicNumerals(d)} ${month} ${toArabicNumerals(year)}`;
+    }
 
-function pad2(n) { return String(n).padStart(2, '0'); }
+    function formatEnglishDate(dateObj) {
+      const day   = EN_DAYS[dateObj.getDay()];
+      const d     = dateObj.getDate();
+      const month = EN_MONTHS[dateObj.getMonth()];
+      const year  = dateObj.getFullYear();
+      return `${day}, ${month} ${d}, ${year}`;
+    }
 
-function formatArabicDate(dateObj) {
-  const day   = AR_DAYS[dateObj.getDay()];
-  const d     = dateObj.getDate();
-  const month = AR_MONTHS[dateObj.getMonth()];
-  const year  = dateObj.getFullYear();
-  return `${day}، ${toArabicNumerals(d)} ${month} ${toArabicNumerals(year)}`;
-}
+    function formatTime12(dateObj) {
+      let h = dateObj.getHours();
+      const m = pad2(dateObj.getMinutes());
+      const ampm = h >= 12 ? (currentLanguage === 'ar' ? 'م' : 'PM') : (currentLanguage === 'ar' ? 'ص' : 'AM');
+      h = h % 12 || 12;
+      return { display: `${toArabicNumerals(pad2(h))}:${toArabicNumerals(m)}`, ampm };
+    }
 
-function formatTime12(dateObj) {
-  let h = dateObj.getHours();
-  const m = pad2(dateObj.getMinutes());
-  const ampm = h >= 12 ? 'م' : 'ص';
-  h = h % 12 || 12;
-  return { display: `${toArabicNumerals(pad2(h))}:${toArabicNumerals(m)}`, ampm };
-}
+    function formatTime24(h, m) {
+      return `${pad2(h)}:${pad2(m)}`;
+    }
 
-function formatTime24(h, m) {
-  return `${pad2(h)}:${pad2(m)}`;
-}
+    function todayKey() {
+      const n = new Date();
+      return `${n.getFullYear()}-${pad2(n.getMonth()+1)}-${pad2(n.getDate())}`;
+    }
 
-function todayKey() {
-  const n = new Date();
-  return `${n.getFullYear()}-${pad2(n.getMonth()+1)}-${pad2(n.getDate())}`;
-}
+    /* ─── Starfield Canvas ───────────────────────────────────────────────────── */
+    (function initStarfield() {
+      const canvas = document.getElementById('starfield');
+      const ctx    = canvas.getContext('2d');
+      let stars    = [];
+      let W, H;
 
-/* ─── Starfield Canvas ───────────────────────────────────────────────────── */
-(function initStarfield() {
-  const canvas = document.getElementById('starfield');
-  const ctx    = canvas.getContext('2d');
-  let stars    = [];
-  let W, H;
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+        buildStars();
+      }
 
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    buildStars();
-  }
+      function buildStars() {
+        stars = [];
+        const count = Math.floor((W * H) / 3500);
+        for (let i = 0; i < count; i++) {
+          stars.push({
+            x:    Math.random() * W,
+            y:    Math.random() * H,
+            r:    Math.random() * 1.2 + 0.2,
+            base: Math.random() * 0.5 + 0.1,
+            amp:  Math.random() * 0.5 + 0.2,
+            spd:  Math.random() * 0.8 + 0.4,
+            off:  Math.random() * Math.PI * 2,
+          });
+        }
+      }
 
-  function buildStars() {
-    stars = [];
-    const count = Math.floor((W * H) / 3500);
-    for (let i = 0; i < count; i++) {
-      stars.push({
-        x:    Math.random() * W,
-        y:    Math.random() * H,
-        r:    Math.random() * 1.2 + 0.2,
-        base: Math.random() * 0.5 + 0.1,
-        amp:  Math.random() * 0.5 + 0.2,
-        spd:  Math.random() * 0.8 + 0.4,
-        off:  Math.random() * Math.PI * 2,
+      function draw(ts) {
+        ctx.clearRect(0, 0, W, H);
+        const t = ts / 1000;
+        for (const s of stars) {
+          const alpha = s.base + s.amp * Math.sin(s.spd * t + s.off);
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(resize, 250);
       });
+      resize();
+      requestAnimationFrame(draw);
+    })();
+
+    /* ─── CSS Decorative Stars ───────────────────────────────────────────────── */
+    (function spawnDecoStars() {
+      const container = document.getElementById('decoStars');
+      const count = 18;
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'deco-star';
+        const size = Math.random() * 3 + 1.5;
+        el.style.cssText = `
+          width:${size}px; height:${size}px;
+          top:${Math.random()*100}%;
+          left:${Math.random()*100}%;
+          --dur:${(Math.random()*4+2).toFixed(1)}s;
+          --delay:-${(Math.random()*5).toFixed(1)}s;
+          --min-op:${(Math.random()*0.2+0.05).toFixed(2)};
+          --max-op:${(Math.random()*0.5+0.4).toFixed(2)};
+        `;
+        container.appendChild(el);
+      }
+    })();
+
+    /* ─── Language & Theme ───────────────────────────────────────────────────── */
+    function applyLanguage() {
+      document.documentElement.lang = currentLanguage;
+      document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+
+      // Update static texts
+      document.getElementById('siteTitle').textContent = translations[currentLanguage].siteTitle + (currentLanguage === 'ar' ? ' • ' + selectedCity : '');
+      document.getElementById('settingsTitle').textContent = translations[currentLanguage].settingsTitle;
+      document.getElementById('langSettingTitle').textContent = translations[currentLanguage].langSettingTitle;
+      document.getElementById('themeSettingTitle').textContent = translations[currentLanguage].themeSettingTitle;
+      document.getElementById('locationSettingTitle').textContent = translations[currentLanguage].locationSettingTitle;
+      document.getElementById('countryLabel').textContent = translations[currentLanguage].countryLabel;
+      document.getElementById('cityLabel').textContent = translations[currentLanguage].cityLabel;
+      document.getElementById('ishaLabel').textContent = translations[currentLanguage].ishaLabel + (currentLanguage === 'ar' ? ' - ' + selectedCity : '');
+      document.getElementById('offsetLabel').textContent = translations[currentLanguage].offsetLabel;
+      document.getElementById('wakeupHeroLabel').textContent = translations[currentLanguage].wakeupHeroLabel;
+      document.getElementById('countdownTitle').textContent = translations[currentLanguage].countdownTitle;
+      document.getElementById('cdHoursLabel').textContent = translations[currentLanguage].cdHoursLabel;
+      document.getElementById('cdMinutesLabel').textContent = translations[currentLanguage].cdMinutesLabel;
+      document.getElementById('cdSecondsLabel').textContent = translations[currentLanguage].cdSecondsLabel;
+      document.getElementById('progressCurrent').textContent = translations[currentLanguage].progressCurrent;
+      document.getElementById('footerText').innerHTML = translations[currentLanguage].footerText;
+
+      // Update dynamic texts that are part of other elements
+      updateDynamicTexts();
     }
-  }
 
-  function draw(ts) {
-    ctx.clearRect(0, 0, W, H);
-    const t = ts / 1000;
-    for (const s of stars) {
-      const alpha = s.base + s.amp * Math.sin(s.spd * t + s.off);
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
-      ctx.fill();
+    function applyTheme() {
+      document.body.classList.toggle('light-mode', currentTheme === 'light');
     }
-    requestAnimationFrame(draw);
-  }
 
-  window.addEventListener('resize', resize);
-  resize();
-  requestAnimationFrame(draw);
-})();
+    function updateDynamicTexts() {
+      const today = new Date();
+      // Date Card
+      if (currentLanguage === 'ar') {
+        document.getElementById('dateGregorian').textContent = formatArabicDate(today);
+        document.getElementById('dateDay').textContent = AR_DAYS[today.getDay()];
+      } else {
+        document.getElementById('dateGregorian').textContent = formatEnglishDate(today);
+        document.getElementById('dateDay').textContent = EN_DAYS[today.getDay()];
+      }
 
-/* ─── CSS Decorative Stars ───────────────────────────────────────────────── */
-(function spawnDecoStars() {
-  const container = document.getElementById('decoStars');
-  const count = 18;
-  for (let i = 0; i < count; i++) {
-    const el = document.createElement('div');
-    el.className = 'deco-star';
-    const size = Math.random() * 3 + 1.5;
-    el.style.cssText = `
-      width:${size}px; height:${size}px;
-      top:${Math.random()*100}%;
-      left:${Math.random()*100}%;
-      --dur:${(Math.random()*4+2).toFixed(1)}s;
-      --delay:-${(Math.random()*5).toFixed(1)}s;
-      --min-op:${(Math.random()*0.2+0.05).toFixed(2)};
-      --max-op:${(Math.random()*0.5+0.4).toFixed(2)};
-    `;
-    container.appendChild(el);
-  }
-})();
+      // Offset text
+      document.querySelector('.info-card:last-child .card-time').textContent = `+ ${toArabicNumerals(OFFSET_HOURS)} ${translations[currentLanguage].hoursOffset} ${translations[currentLanguage].and} ${toArabicNumerals(OFFSET_MINUTES)} ${translations[currentLanguage].minutesOffset}`;
 
-/* ─── Fetch Prayer Times ─────────────────────────────────────────────────── */
-async function fetchPrayerTimes() {
-  setStatus('loading');
-  const today = new Date();
-  const dd    = pad2(today.getDate());
-  const mm    = pad2(today.getMonth() + 1);
-  const yyyy  = today.getFullYear();
-  const url   = `${API_BASE}/${dd}-${mm}-${yyyy}?city=Damascus&country=Syria&method=4`;
+      // Wakeup note
+      document.getElementById('wakeupNote').innerHTML = `<span id="wakeupNoteIsha"></span> + ${toArabicNumerals(OFFSET_HOURS)} ${translations[currentLanguage].hoursOffset} ${translations[currentLanguage].and} ${toArabicNumerals(OFFSET_MINUTES)} ${translations[currentLanguage].minutesOffset}`;
 
-  try {
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const json = await resp.json();
-    if (json.code !== 200) throw new Error(json.status || 'API error');
+      // Wakeup sublabel
+      if (wakeupDateTime) {
+        const isNextDay = wakeupDateTime.getDate() !== today.getDate();
+        if (currentLanguage === 'ar') {
+          document.getElementById('wakeupHeroSublabel').textContent = isNextDay ? `${translations[currentLanguage].nextDayPrefix} ${AR_DAYS[wakeupDateTime.getDay()]}` : translations[currentLanguage].today;
+        } else {
+          document.getElementById('wakeupHeroSublabel').textContent = isNextDay ? `${translations[currentLanguage].nextDayPrefix} ${EN_DAYS[wakeupDateTime.getDay()]}` : translations[currentLanguage].today;
+        }
+      }
 
-    const timings = json.data.timings;
-    const dateData = json.data.date;
+      // Countdown message
+      const msgEl = document.getElementById('cdMessage');
+      if (msgEl.textContent === translations.ar.cdMessageCalculating || msgEl.textContent === translations.en.cdMessageCalculating) {
+        msgEl.textContent = translations[currentLanguage].cdMessageCalculating;
+      }
+    }
 
-    processData(timings, dateData, today);
-    lastFetchedDate = todayKey();
-    setStatus('success');
+    /* ─── Fetch Prayer Times ─────────────────────────────────────────────────── */
+    async function fetchPrayerTimes() {
+      setStatus('loading');
+      const today = new Date();
+      const dd    = pad2(today.getDate());
+      const mm    = pad2(today.getMonth() + 1);
+      const yyyy  = today.getFullYear();
+      const url   = `${API_BASE}/${dd}-${mm}-${yyyy}?city=${selectedCity}&country=${selectedCountry}&method=4`;
 
-  } catch (err) {
-    console.error('Fetch error:', err);
-    setStatus('error', err.message);
-    // Retry after 30s
-    setTimeout(fetchPrayerTimes, 30000);
-  }
-}
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const json = await resp.json();
+        if (json.code !== 200) throw new Error(json.status || 'API error');
 
-/* ─── Process & Render ───────────────────────────────────────────────────── */
-function processData(timings, dateData, today) {
-  /* --- Isha time --- */
-  const [ishaH, ishaM] = timings.Isha.split(':').map(Number);
+        const timings = json.data.timings;
+        const dateData = json.data.date;
 
-  /* --- Wake-up = Isha + 7h20m --- */
-  let wuH = ishaH + OFFSET_HOURS;
-  let wuM = ishaM + OFFSET_MINUTES;
-  if (wuM >= 60) { wuM -= 60; wuH += 1; }
+        processData(timings, dateData, today);
+        lastFetchedDate = todayKey();
+        setStatus('success');
 
-  /* Build wake-up Date object (may cross midnight → next day) */
-  const wuDate = new Date(today);
-  wuDate.setHours(wuH, wuM, 0, 0);
-  // If wake-up is earlier than now (already passed today), push to tomorrow
-  if (wuDate <= new Date()) {
-    wuDate.setDate(wuDate.getDate() + 1);
-  }
-  wakeupDateTime = wuDate;
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setStatus('error', err.message);
+        // Retry after 30s
+        setTimeout(fetchPrayerTimes, 30000);
+      }
+    }
 
-  /* --- Render dates --- */
-  // Hijri from API
-  const h = dateData.hijri;
-  document.getElementById('dateHijri').textContent =
-    `${toArabicNumerals(h.day)} ${h.month.ar} ${toArabicNumerals(h.year)} هـ`;
+    /* ─── Process & Render ───────────────────────────────────────────────────── */
+    function processData(timings, dateData, today) {
+      /* --- Isha time --- */
+      const [ishaH, ishaM] = timings.Isha.split(':').map(Number);
 
-  document.getElementById('dateGregorian').textContent = formatArabicDate(today);
-  document.getElementById('dateDay').textContent =
-    AR_DAYS[today.getDay()];
+      /* --- Wake-up = Isha + 7h20m --- */
+      let wuH = ishaH + OFFSET_HOURS;
+      let wuM = ishaM + OFFSET_MINUTES;
+      if (wuM >= 60) { wuM -= 60; wuH += 1; }
 
-  /* --- Render Isha --- */
-  const ishaDate = new Date(today);
-  ishaDate.setHours(ishaH, ishaM, 0, 0);
-  const { display: ishaDisplay, ampm: ishaAmPm } = formatTime12(ishaDate);
-  document.getElementById('ishaTime').textContent = ishaDisplay;
-  document.getElementById('ishaAmPm').textContent = ishaAmPm;
+      /* Build wake-up Date object (may cross midnight → next day) */
+      const wuDate = new Date(today);
+      wuDate.setHours(wuH, wuM, 0, 0);
+      // If wake-up is earlier than now (already passed today), push to tomorrow
+      if (wuDate <= new Date()) {
+        wuDate.setDate(wuDate.getDate() + 1);
+      }
+      wakeupDateTime = wuDate;
 
-  /* --- Render wake-up --- */
-  const wuNorm = wuH % 24;
-  const { display: wuDisplay, ampm } = formatTime12(wuDate);
-  document.getElementById('wakeupTime').textContent = wuDisplay;
-  document.getElementById('wakeupAmPm').textContent = ampm;
+      /* --- Render dates --- */
+      // Hijri from API
+      const h = dateData.hijri;
+      document.getElementById('dateHijri').textContent =
+        `${toArabicNumerals(h.day)} ${h.month.ar} ${toArabicNumerals(h.year)} هـ`;
 
-  // Wake-up date label
-  const isNextDay = wuDate.getDate() !== today.getDate();
-  document.getElementById('wakeupDate').textContent =
-    isNextDay ? `صباح ${AR_DAYS[wuDate.getDay()]}` : 'اليوم';
+      updateDynamicTexts(); // Update all language-dependent texts
 
-  // Note
-  document.getElementById('wakeupNoteIsha').textContent =
-    toArabicNumerals(formatTime24(ishaH, ishaM));
+      /* --- Render Isha --- */
+      const ishaDate = new Date(today);
+      ishaDate.setHours(ishaH, ishaM, 0, 0);
+      const { display: ishaDisplay, ampm: ishaAmPm } = formatTime12(ishaDate);
+      document.getElementById('ishaTime').textContent = ishaDisplay;
+      document.getElementById('ishaAmPm').textContent = ishaAmPm;
 
-  // Progress bar target label
-  document.getElementById('progressTarget').textContent =
-    toArabicNumerals(wuDisplay) + ' ' + ampm;
-}
+      /* --- Render wake-up --- */
+      const { display: wuDisplay, ampm } = formatTime12(wuDate);
+      document.getElementById('wakeupTime').textContent = wuDisplay;
+      document.getElementById('wakeupAmPm').textContent = ampm;
 
-/* ─── Status Badge ───────────────────────────────────────────────────────── */
-function setStatus(type, msg) {
-  const el = document.getElementById('statusBadge');
-  if (type === 'loading') {
-    el.innerHTML = `<span class="status-badge loading"><span class="spinner"></span> جارٍ تحميل أوقات الصلاة…</span>`;
-  } else if (type === 'success') {
-    el.innerHTML = `<span class="status-badge success">✓ تم تحديث الأوقات بنجاح</span>`;
-  } else {
-    el.innerHTML = `<span class="status-badge error">⚠ خطأ في التحميل – سيُعاد المحاولة</span>`;
-  }
-}
+      // Wake-up note
+      document.getElementById('wakeupNoteIsha').textContent =
+        toArabicNumerals(formatTime24(ishaH, ishaM));
 
-/* ─── Countdown Ticker ───────────────────────────────────────────────────── */
-function tick() {
-  if (!wakeupDateTime) return;
+      // Progress bar target label
+      document.getElementById('progressTarget').textContent =
+        toArabicNumerals(wuDisplay) + ' ' + ampm;
+    }
 
-  const now  = new Date();
-  const diff = wakeupDateTime - now;   // ms
+    /* ─── Status Badge ───────────────────────────────────────────────────────── */
+    function setStatus(type, msg) {
+      const el = document.getElementById('statusBadge');
+      if (type === 'loading') {
+        el.innerHTML = `<span class="status-badge loading"><span class="spinner"></span> ${translations[currentLanguage].statusLoading}</span>`;
+      } else if (type === 'success') {
+        el.innerHTML = `<span class="status-badge success">${translations[currentLanguage].statusSuccess}</span>`;
+      } else {
+        el.innerHTML = `<span class="status-badge error">${translations[currentLanguage].statusError}</span>`;
+      }
+    }
 
-  if (diff <= 0) {
-    // Wake-up time reached!
-    document.getElementById('cdHours').textContent   = '٠٠';
-    document.getElementById('cdMinutes').textContent = '٠٠';
-    document.getElementById('cdSeconds').textContent = '٠٠';
-    const msg = document.getElementById('cdMessage');
-    msg.textContent = '🌅 حان وقت الاستيقاظ! صباح النور';
-    msg.className = 'countdown-message alert';
-    document.getElementById('progressFill').style.width = '100%';
-    document.getElementById('progressPct').textContent = '١٠٠٪';
-    return;
-  }
+    /* ─── Countdown Ticker ───────────────────────────────────────────────────── */
+    function tick() {
+      if (!wakeupDateTime) return;
 
-  const totalSec = Math.floor(diff / 1000);
-  const hh = Math.floor(totalSec / 3600);
-  const mm = Math.floor((totalSec % 3600) / 60);
-  const ss = totalSec % 60;
+      const now  = new Date();
+      const diff = wakeupDateTime - now;   // ms
 
-  document.getElementById('cdHours').textContent   = toArabicNumerals(pad2(hh));
-  document.getElementById('cdMinutes').textContent = toArabicNumerals(pad2(mm));
-  document.getElementById('cdSeconds').textContent = toArabicNumerals(pad2(ss));
+      if (diff <= 0) {
+        // Wake-up time reached!
+        document.getElementById('cdHours').textContent   = toArabicNumerals('00');
+        document.getElementById('cdMinutes').textContent = toArabicNumerals('00');
+        document.getElementById('cdSeconds').textContent = toArabicNumerals('00');
+        const msg = document.getElementById('cdMessage');
+        msg.textContent = translations[currentLanguage].cdMessageWakeUp;
+        msg.className = 'countdown-message alert';
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('progressPct').textContent = toArabicNumerals('100') + '٪';
+        return;
+      }
 
-  // Countdown message
-  const msg = document.getElementById('cdMessage');
-  if (hh >= 8) {
-    msg.textContent = '🌙 لا تزال الليلة طويلة، استرح جيداً';
-  } else if (hh >= 4) {
-    msg.textContent = '😴 تبقّى بعض الوقت، نم هنيئاً';
-  } else if (hh >= 1) {
-    msg.textContent = '⏰ اقترب موعد الاستيقاظ، استعد';
-  } else if (mm >= 10) {
-    msg.textContent = '🔔 قريباً جداً! استعد للاستيقاظ';
-  } else {
-    msg.textContent = '🌅 لحظات ويحين موعد الاستيقاظ!';
-    msg.className = 'countdown-message alert';
-  }
+      const totalSec = Math.floor(diff / 1000);
+      const hh = Math.floor(totalSec / 3600);
+      const mm = Math.floor((totalSec % 3600) / 60);
+      const ss = totalSec % 60;
 
-  /* Progress bar: from 24h window back to wake-up */
-  const windowMs = 24 * 60 * 60 * 1000;
-  const elapsed  = windowMs - diff;
-  const pct      = Math.max(0, Math.min(100, (elapsed / windowMs) * 100));
-  document.getElementById('progressFill').style.width = pct.toFixed(2) + '%';
-  document.getElementById('progressPct').textContent  = toArabicNumerals(Math.floor(pct)) + '٪';
-}
+      document.getElementById('cdHours').textContent   = toArabicNumerals(pad2(hh));
+      document.getElementById('cdMinutes').textContent = toArabicNumerals(pad2(mm));
+      document.getElementById('cdSeconds').textContent = toArabicNumerals(pad2(ss));
 
-/* ─── Midnight Refresh ───────────────────────────────────────────────────── */
-function scheduleMidnightRefresh() {
-  const now       = new Date();
-  const midnight  = new Date(now);
-  midnight.setHours(24, 0, 30, 0);   // 00:00:30 next day
-  const msUntil   = midnight - now;
-  setTimeout(() => {
-    fetchPrayerTimes();
+      // Countdown message
+      const msg = document.getElementById('cdMessage');
+      if (hh >= 8) {
+        msg.textContent = translations[currentLanguage].cdMessageLongNight;
+      } else if (hh >= 4) {
+        msg.textContent = translations[currentLanguage].cdMessageSomeTimeLeft;
+      } else if (hh >= 1) {
+        msg.textContent = translations[currentLanguage].cdMessageApproaching;
+      } else if (mm >= 10) {
+        msg.textContent = translations[currentLanguage].cdMessageVerySoon;
+      } else {
+        msg.textContent = translations[currentLanguage].cdMessageWakeUp;
+        msg.className = 'countdown-message alert';
+      }
+
+      /* Progress bar: from 24h window back to wake-up */
+      const windowMs = 24 * 60 * 60 * 1000;
+      const elapsed  = windowMs - diff;
+      const pct      = Math.max(0, Math.min(100, (elapsed / windowMs) * 100));
+      document.getElementById('progressFill').style.width = pct.toFixed(2) + '%';
+      document.getElementById('progressPct').textContent  = toArabicNumerals(Math.floor(pct)) + '٪';
+    }
+
+    /* ─── Midnight Refresh ───────────────────────────────────────────────────── */
+    function scheduleMidnightRefresh() {
+      const now       = new Date();
+      const midnight  = new Date(now);
+      midnight.setHours(24, 0, 30, 0);   // 00:00:30 next day
+      const msUntil   = midnight - now;
+      setTimeout(() => {
+        fetchPrayerTimes();
+        scheduleMidnightRefresh();
+      }, msUntil);
+    }
+
+    /* ─── Day-change guard (in case tab is left open) ────────────────────────── */
+    function dayChangeGuard() {
+      if (lastFetchedDate && lastFetchedDate !== todayKey()) {
+        fetchPrayerTimes();
+      }
+    }
+
+    /* ─── Settings Panel Logic ───────────────────────────────────────────────── */
+    const settingsBtn = document.getElementById('settingsBtn');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const langToggle = document.getElementById('langToggle');
+    const themeToggle = document.getElementById('themeToggle');
+    const countrySelect = document.getElementById('countrySelect');
+    const citySelect = document.getElementById('citySelect');
+
+    settingsBtn.addEventListener('click', () => {
+      settingsPanel.classList.add('open');
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsPanel.classList.remove('open');
+    });
+
+    langToggle.addEventListener('change', () => {
+      currentLanguage = langToggle.checked ? 'en' : 'ar';
+      localStorage.setItem('language', currentLanguage);
+      applyLanguage();
+      populateCountries(); // Re-populate to update default option text
+      fetchPrayerTimes(); // Re-fetch to update city names if needed
+    });
+
+    themeToggle.addEventListener('change', () => {
+      currentTheme = themeToggle.checked ? 'light' : 'dark';
+      localStorage.setItem('theme', currentTheme);
+      applyTheme();
+    });
+
+    countrySelect.addEventListener('change', () => {
+      selectedCountry = countrySelect.value;
+      localStorage.setItem('country', selectedCountry);
+      populateCities(selectedCountry);
+      fetchPrayerTimes();
+    });
+
+    citySelect.addEventListener('change', () => {
+      selectedCity = citySelect.value;
+      localStorage.setItem('city', selectedCity);
+      fetchPrayerTimes();
+    });
+
+    // Populate countries and cities
+    let allCountriesData = [];
+
+    async function loadCountriesAndCitiesData() {
+      try {
+        const response = await fetch("countries_cities.json");
+        allCountriesData = await response.json();
+        populateCountries();
+      } catch (error) {
+        console.error("Error loading countries and cities data:", error);
+      }
+    }
+
+    function populateCountries() {
+      countrySelect.innerHTML = "";
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = currentLanguage === "ar" ? "اختر الدولة" : "Select Country";
+      countrySelect.appendChild(defaultOption);
+
+      allCountriesData.forEach(country => {
+        const option = document.createElement("option");
+        option.value = country.name;
+        option.textContent = country.name;
+        countrySelect.appendChild(option);
+      });
+
+      // Set initial selection
+      countrySelect.value = selectedCountry;
+      populateCities(selectedCountry);
+    }
+
+    function populateCities(countryName) {
+      citySelect.innerHTML = "";
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = currentLanguage === "ar" ? "اختر المدينة" : "Select City";
+      citySelect.appendChild(defaultOption);
+
+      const countryData = allCountriesData.find(c => c.name === countryName);
+      if (countryData && countryData.cities) {
+        countryData.cities.sort((a, b) => a.localeCompare(b));
+        countryData.cities.forEach(city => {
+          const option = document.createElement("option");
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
+        });
+      }
+
+      // Set initial selection
+      citySelect.value = selectedCity;
+    }
+
+    /* ─── Initial Setup ──────────────────────────────────────────────────────── */
+    function initialSetup() {
+      // Apply saved language and theme
+      langToggle.checked = currentLanguage === 'en';
+      themeToggle.checked = currentTheme === 'light';
+      applyLanguage();
+      applyTheme();
+
+      loadCountriesAndCitiesData();
+      fetchPrayerTimes();
+    }
+
+    /* ─── Boot ───────────────────────────────────────────────────────────────── */
+    initialSetup();
+    setInterval(tick, 1000);
+    setInterval(dayChangeGuard, 60000);
     scheduleMidnightRefresh();
-  }, msUntil);
-}
-
-/* ─── Day-change guard (in case tab is left open) ────────────────────────── */
-function dayChangeGuard() {
-  if (lastFetchedDate && lastFetchedDate !== todayKey()) {
-    fetchPrayerTimes();
-  }
-}
-
-/* ─── Boot ───────────────────────────────────────────────────────────────── */
-fetchPrayerTimes();
-setInterval(tick, 1000);
-setInterval(dayChangeGuard, 60000);
-scheduleMidnightRefresh();
-</script>
+  </script>
 </body>
 </html>
