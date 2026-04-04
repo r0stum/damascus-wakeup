@@ -1384,7 +1384,50 @@
 
     // Initial load
     updateUI();
-    detectLocation(true); // Auto-detect on load
+    
+    // Request location permission immediately on page load
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          currentCoords = { latitude, longitude };
+          localStorage.setItem("coords", JSON.stringify(currentCoords));
+
+          try {
+            const geoResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+            const geoData = await geoResponse.json();
+
+            if (geoData && geoData.address) {
+              currentCity = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.hamlet || "Unknown";
+              currentCountry = geoData.address.country || "Unknown";
+              localStorage.setItem("city", currentCity);
+              localStorage.setItem("country", currentCountry);
+              
+              // Update UI with detected location
+              document.documentElement.lang = currentLang;
+              document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+              document.title = currentLang === "ar" ? `موعد الاستيقاظ – ${currentCity}` : `Wake-up Time – ${currentCity}`;
+              document.getElementById("siteTitle").innerHTML = currentLang === "ar" ? `موعد الاستيقاظ <span id="siteCity">– ${currentCity}</span>` : `Wake-up Time <span id="siteCity">– ${currentCity}</span>`;
+              document.getElementById("siteCity").textContent = `– ${currentCity}`;
+              
+              // Fetch prayer times with exact coordinates
+              fetchPrayerTimes();
+            }
+          } catch (error) {
+            console.error("Error reverse geocoding:", error);
+            fetchPrayerTimes(); // Still fetch by coords if geocoding fails
+          }
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          // Fallback to default location if permission denied
+          updateUI();
+        }
+      );
+    } else {
+      // Fallback if geolocation not supported
+      updateUI();
+    }
 
     // Refresh daily at midnight
     function scheduleDailyRefresh() {
