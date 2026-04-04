@@ -707,6 +707,16 @@
         <span class="icon">📍</span>
         <span class="text" id="detectLocationText">تحديد موقعي</span>
       </button>
+      
+      <button id="refreshLocationBtn" class="detect-location-btn" style="background: linear-gradient(45deg, #f9c74f, #ffd166); margin-top: 0.8rem;">
+        <span class="icon">🔄</span>
+        <span class="text" id="refreshLocationText">تحديث الموقع</span>
+      </button>
+      
+      <div id="insecureContextMessage" style="display: none; margin-top: 1.5rem; padding: 1rem; background: rgba(255, 107, 107, 0.15); border: 1px solid rgba(255, 107, 107, 0.3); border-radius: 8px; text-align: center;">
+        <div style="color: #ff6b6b; font-weight: 600; margin-bottom: 0.5rem;">⚠️ HTTPS Required</div>
+        <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;" id="insecureContextText">This site is running on HTTP. Deploy to HTTPS (like GitHub Pages) to enable live location detection.</div>
+      </div>
     </div>
   </div>
 
@@ -1385,7 +1395,9 @@
     // ─── Geolocation and Initialization Logic ─────────────────────────────
     
     // Check if running on insecure context (HTTP)
-    if (!window.isSecureContext) {
+    const isSecureContext = window.isSecureContext;
+    
+    if (!isSecureContext) {
       console.warn(
         "%c⚠️ INSECURE CONTEXT WARNING",
         "color: #ff6b6b; font-weight: bold; font-size: 14px;"
@@ -1479,6 +1491,17 @@
     
     // Function to request location on page load
     function requestLocationOnLoad() {
+      // Show insecure context warning if applicable
+      if (!isSecureContext) {
+        const insecureMsg = document.getElementById("insecureContextMessage");
+        if (insecureMsg) {
+          insecureMsg.style.display = "block";
+        }
+        console.warn("%c✗ Cannot request geolocation on insecure context", "color: #ff6b6b; font-weight: bold;");
+        console.log("Using default location: Damascus");
+        return;
+      }
+      
       if (!navigator.geolocation) {
         console.warn("%c✗ Geolocation API not supported by this browser", "color: #ffa94d; font-weight: bold;");
         console.log("Using default location: Damascus");
@@ -1507,6 +1530,15 @@
       
       // Request geolocation permission immediately
       requestLocationOnLoad();
+      
+      // Setup manual refresh button
+      const refreshLocationBtn = document.getElementById("refreshLocationBtn");
+      if (refreshLocationBtn) {
+        refreshLocationBtn.addEventListener("click", function() {
+          console.log("%c🔄 Manual location refresh requested", "color: #f9c74f; font-weight: bold;");
+          requestLocationOnLoad();
+        });
+      }
     });
     
     // Fallback: If DOMContentLoaded already fired before script loaded
@@ -1517,6 +1549,15 @@
       console.log("%c🌙 Damascus Wakeup - Initializing (DOM already loaded)...", "color: #f9c74f; font-weight: bold; font-size: 14px;");
       updateUI();
       requestLocationOnLoad();
+      
+      // Setup manual refresh button
+      const refreshLocationBtn = document.getElementById("refreshLocationBtn");
+      if (refreshLocationBtn) {
+        refreshLocationBtn.addEventListener("click", function() {
+          console.log("%c🔄 Manual location refresh requested", "color: #f9c74f; font-weight: bold;");
+          requestLocationOnLoad();
+        });
+      }
     }
 
     // Refresh daily at midnight
