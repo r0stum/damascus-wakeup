@@ -1382,63 +1382,142 @@
       return String(number).split("").map(digit => arabicNumerals[parseInt(digit)]).join("");
     }
 
-    // Initial load - First update UI with defaults
-    updateUI();
+    // ─── Geolocation and Initialization Logic ─────────────────────────────
     
-    // Request location permission immediately on page load
-    function requestLocationOnLoad() {
-      if (navigator.geolocation) {
-        console.log("Requesting geolocation permission...");
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            console.log("Location permission granted", position.coords);
-            const { latitude, longitude } = position.coords;
-            currentCoords = { latitude, longitude };
-            localStorage.setItem("coords", JSON.stringify(currentCoords));
-
-            try {
-              const geoResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
-              const geoData = await geoResponse.json();
-              console.log("Reverse geocoding result:", geoData);
-
-              if (geoData && geoData.address) {
-                currentCity = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.hamlet || "Unknown";
-                currentCountry = geoData.address.country || "Unknown";
-                localStorage.setItem("city", currentCity);
-                localStorage.setItem("country", currentCountry);
-                
-                console.log("Detected location:", currentCity, currentCountry);
-                
-                // Update UI with detected location
-                document.title = currentLang === "ar" ? `موعد الاستيقاظ – ${currentCity}` : `Wake-up Time – ${currentCity}`;
-                document.getElementById("siteTitle").innerHTML = currentLang === "ar" ? `موعد الاستيقاظ <span id="siteCity">– ${currentCity}</span>` : `Wake-up Time <span id="siteCity">– ${currentCity}</span>`;
-                document.getElementById("siteCity").textContent = `– ${currentCity}`;
-                
-                // Fetch prayer times with exact coordinates
-                fetchPrayerTimes();
-              }
-            } catch (error) {
-              console.error("Error reverse geocoding:", error);
-              fetchPrayerTimes(); // Still fetch by coords if geocoding fails
-            }
-          },
-          (error) => {
-            console.error("Geolocation permission denied or error:", error.message);
-            // Fallback to default location if permission denied
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-          }
+    // Check if running on insecure context (HTTP)
+    if (!window.isSecureContext) {
+      console.warn(
+        "%c⚠️ INSECURE CONTEXT WARNING",
+        "color: #ff6b6b; font-weight: bold; font-size: 14px;"
+      );
+      console.warn(
+        "%cThe site is running on HTTP (not HTTPS). The Geolocation API will not work.",
+        "color: #ff6b6b; font-size: 12px;"
+      );
+      console.warn(
+        "%cPlease deploy to a secure HTTPS connection for geolocation to function properly.",
+        "color: #ff6b6b; font-size: 12px;"
+      );
+    } else {
+      console.log("%c✓ Secure Context Detected", "color: #51cf66; font-weight: bold;");
+      console.log("%cGeolocation API is available.", "color: #51cf66;");
+    }
+    
+    // Function to update UI with detected location
+    function updateUIWithDetectedLocation(city, country) {
+      currentCity = city;
+      currentCountry = country;
+      localStorage.setItem("city", currentCity);
+      localStorage.setItem("country", currentCountry);
+      
+      console.log("%cUpdating UI with detected location:", "color: #4fc3f7; font-weight: bold;", city, country);
+      
+      // Update document title
+      document.title = currentLang === "ar" ? `موعد الاستيقاظ – ${currentCity}` : `Wake-up Time – ${currentCity}`;
+      
+      // Update site title and city span
+      document.getElementById("siteTitle").innerHTML = currentLang === "ar" 
+        ? `موعد الاستيقاظ <span id="siteCity">– ${currentCity}</span>` 
+        : `Wake-up Time <span id="siteCity">– ${currentCity}</span>`;
+      document.getElementById("siteCity").textContent = `– ${currentCity}`;
+      
+      // Fetch and display prayer times with exact coordinates
+      fetchPrayerTimes();
+    }
+    
+    // Function to handle geolocation success
+    async function handleGeolocationSuccess(position) {
+      const { latitude, longitude } = position.coords;
+      currentCoords = { latitude, longitude };
+      localStorage.setItem("coords", JSON.stringify(currentCoords));
+      
+      console.log("%c✓ Geolocation Permission Granted", "color: #51cf66; font-weight: bold;");
+      console.log("Coordinates:", { latitude, longitude });
+      
+      try {
+        // Reverse geocode to get city and country names
+        const geoResponse = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
         );
-      } else {
-        console.log("Geolocation not supported by browser");
+        const geoData = await geoResponse.json();
+        console.log("Reverse geocoding result:", geoData);
+        
+        if (geoData && geoData.address) {
+          const detectedCity = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.hamlet || "Unknown";
+          const detectedCountry = geoData.address.country || "Unknown";
+          updateUIWithDetectedLocation(detectedCity, detectedCountry);
+        } else {
+          console.warn("Could not determine city/country from coordinates. Using default location.");
+          fetchPrayerTimes(); // Still fetch prayer times with coordinates
+        }
+      } catch (error) {
+        console.error("Error reverse geocoding:", error);
+        console.log("Falling back to prayer time calculation with coordinates only.");
+        fetchPrayerTimes(); // Still fetch by coords if geocoding fails
       }
     }
     
-    // Request location immediately
-    requestLocationOnLoad();
+    // Function to handle geolocation errors
+    function handleGeolocationError(error) {
+      let errorMessage = "Unknown error";
+      
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          errorMessage = "User denied geolocation permission";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          errorMessage = "Position information is unavailable";
+          break;
+        case error.TIMEOUT:
+          errorMessage = "Geolocation request timed out";
+          break;
+      }
+      
+      console.warn("%c✗ Geolocation Error:", "color: #ffa94d; font-weight: bold;", errorMessage);
+      console.log("%cFalling back to default location (Damascus)...", "color: #ffa94d;");
+    }
+    
+    // Function to request location on page load
+    function requestLocationOnLoad() {
+      if (!navigator.geolocation) {
+        console.warn("%c✗ Geolocation API not supported by this browser", "color: #ffa94d; font-weight: bold;");
+        console.log("Using default location: Damascus");
+        return;
+      }
+      
+      console.log("%cRequesting geolocation permission...", "color: #4fc3f7; font-weight: bold;");
+      
+      navigator.geolocation.getCurrentPosition(
+        handleGeolocationSuccess,
+        handleGeolocationError,
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        }
+      );
+    }
+    
+    // Initialize on DOM content loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      console.log("%c🌙 Damascus Wakeup - Initializing...", "color: #f9c74f; font-weight: bold; font-size: 14px;");
+      
+      // Update UI with default/saved location
+      updateUI();
+      
+      // Request geolocation permission immediately
+      requestLocationOnLoad();
+    });
+    
+    // Fallback: If DOMContentLoaded already fired before script loaded
+    if (document.readyState === "loading") {
+      // DOM is still loading, event listener will handle it
+    } else {
+      // DOM is already loaded, execute directly
+      console.log("%c🌙 Damascus Wakeup - Initializing (DOM already loaded)...", "color: #f9c74f; font-weight: bold; font-size: 14px;");
+      updateUI();
+      requestLocationOnLoad();
+    }
 
     // Refresh daily at midnight
     function scheduleDailyRefresh() {
