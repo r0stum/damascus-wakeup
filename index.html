@@ -1389,25 +1389,43 @@
     }
 
     // ─── Date Display ───────────────────────────────────────────────────
+    /**
+     * Updates the date display in the UI.
+     * Performs a true Hijri calendar conversion using the Intl.DateTimeFormat API.
+     */
     function updateDateDisplay() {
       const now = new Date();
-      const gregorianDate = now.toLocaleDateString(currentLang === "ar" ? "ar-EG" : "en-US", { year: "numeric", month: "long", day: "numeric" });
-      const dayOfWeek = now.toLocaleDateString(currentLang === "ar" ? "ar-EG" : "en-US", { weekday: "long" });
+      
+      // 1. Gregorian Date & Day of Week
+      const gregorianLocale = currentLang === "ar" ? "ar-EG" : "en-US";
+      const gregorianDate = now.toLocaleDateString(gregorianLocale, { year: "numeric", month: "long", day: "numeric" });
+      const dayOfWeek = now.toLocaleDateString(gregorianLocale, { weekday: "long" });
 
       document.getElementById("dateGregorian").textContent = gregorianDate;
       document.getElementById("dateDay").textContent = dayOfWeek;
 
-      // Hijri date rendering with conditional logic based on language
+      // 2. True Hijri Calendar Conversion
       let formattedHijri;
       if (currentLang === "ar") {
-        formattedHijri = new Intl.DateTimeFormat('ar-u-ca-islamic-uma-nu-arab', { day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+        // Arabic: Islamic calendar, Arabic numbering system (١، ٢، ٣), Arabic month names
+        formattedHijri = new Intl.DateTimeFormat('ar-u-ca-islamic-uma-nu-arab', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        }).format(now);
         formattedHijri += " هـ";
       } else {
-        formattedHijri = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', { day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+        // English: Islamic calendar, Latin numbering system (1, 2, 3), English transliterated month names (e.g., Shawwal)
+        formattedHijri = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        }).format(now);
         formattedHijri += " AH";
       }
       
-      document.getElementById("dateHijri").textContent = formattedHijri;
+      // Update the UI element
+      document.getElementById("dateHijri").innerText = formattedHijri;
     }
 
     // ─── Display Update ─────────────────────────────────────────────────
