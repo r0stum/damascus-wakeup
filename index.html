@@ -653,6 +653,9 @@
   <canvas id="starfield"></canvas>
   <div class="bg-gradient"></div>
 
+  <!-- Location Detection Button (Top Left) -->
+  <button id="detectLocationBtn" title="Detect My Location" style="position: fixed; top: 1rem; left: 1rem; z-index: 999; width: 3rem; height: 3rem; border-radius: 50%; background: linear-gradient(45deg, var(--accent), var(--accent2)); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(79, 195, 247, 0.3); transition: all 0.3s ease; opacity: 0.8;" id="detectLocationBtnTop">📍</button>
+
   <!-- Settings Button -->
   <button id="settingsBtn" title="Settings">⚙️</button>
 
@@ -1105,6 +1108,73 @@
         settingsPanel.classList.remove("open");
       } else {
         alert(currentLang === "ar" ? "يرجى اختيار الدولة والمدينة" : "Please select country and city");
+      }
+    });
+
+    // Detect Location Button (Top Left)
+    const detectLocationBtnTop = document.getElementById("detectLocationBtn");
+    detectLocationBtnTop.addEventListener("click", () => {
+      detectLocationBtnTop.style.opacity = "0.5";
+      detectLocationBtnTop.disabled = true;
+      
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            currentCoords = { latitude, longitude };
+            localStorage.setItem("coords", JSON.stringify(currentCoords));
+
+            try {
+              const geoResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+              const geoData = await geoResponse.json();
+
+              if (geoData && geoData.address) {
+                currentCity = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.hamlet || "Unknown";
+                currentCountry = geoData.address.country || "Unknown";
+                localStorage.setItem("city", currentCity);
+                localStorage.setItem("country", currentCountry);
+                updateUI();
+                console.log("%cLocation detected:", "color: #51cf66; font-weight: bold;", currentCity, currentCountry);
+              }
+            } catch (error) {
+              console.error("Error reverse geocoding:", error);
+              fetchPrayerTimes();
+            } finally {
+              detectLocationBtnTop.style.opacity = "0.8";
+              detectLocationBtnTop.disabled = false;
+            }
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+            alert(currentLang === "ar" ? "لا يمكن الوصول إلى موقعك. يرجى تفعيل خدمات الموقع." : "Unable to access your location. Please enable location services.");
+            detectLocationBtnTop.style.opacity = "0.8";
+            detectLocationBtnTop.disabled = false;
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          }
+        );
+      } else {
+        alert(currentLang === "ar" ? "المتصفح لا يدعم تحديد المواقع." : "Geolocation is not supported by this browser.");
+        detectLocationBtnTop.style.opacity = "0.8";
+        detectLocationBtnTop.disabled = false;
+      }
+    });
+
+    // Add hover effect to the location button
+    detectLocationBtnTop.addEventListener("mouseenter", () => {
+      if (!detectLocationBtnTop.disabled) {
+        detectLocationBtnTop.style.opacity = "1";
+        detectLocationBtnTop.style.transform = "scale(1.1)";
+      }
+    });
+
+    detectLocationBtnTop.addEventListener("mouseleave", () => {
+      if (!detectLocationBtnTop.disabled) {
+        detectLocationBtnTop.style.opacity = "0.8";
+        detectLocationBtnTop.style.transform = "scale(1)";
       }
     });
 
