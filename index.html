@@ -153,23 +153,28 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
 
-    .date-hijri {
-      font-size: clamp(0.85rem, 2.5vw, 1rem);
-      color: var(--gold);
+    .date-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+    }
+
+    .hijri-month-ar {
+      color: #ffcc00;
+      font-size: 1.45em;
+      font-weight: 800;
+      text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+      line-height: 1.2;
+    }
+
+    .hijri-month-en {
+      color: #ffcc00;
+      font-size: 1.05em;
       font-weight: 600;
-    }
-
-    .date-gregorian {
-      font-size: clamp(1rem, 3vw, 1.25rem);
-      color: var(--text-main);
-      font-weight: 700;
-      margin-top: 0.15rem;
-    }
-
-    .date-day {
-      font-size: clamp(0.8rem, 2vw, 0.9rem);
-      color: var(--text-sub);
-      margin-top: 0.1rem;
+      text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
+      line-height: 1.2;
     }
 
     /* ─── Main Cards Grid ───────────────────────────────────────────────── */
@@ -777,10 +782,10 @@
       </div>
     </header>
 
-    <div class="date-card">
-      <div class="date-hijri" id="dateHijri">١ محرم ١٤٤٥ هـ</div>
-      <div class="date-gregorian" id="dateGregorian">1 January 2024</div>
-      <div class="date-day" id="dateDay">الاثنين</div>
+    <div class="date-card" id="hijriMonthBox">
+      <!-- Hijri Month Display (Auto-updated via JS) -->
+      <div class="hijri-month-ar" id="hijriMonthAr"></div>
+      <div class="hijri-month-en" id="hijriMonthEn"></div>
     </div>
 
     <div class="cards-row">
@@ -1391,36 +1396,23 @@
     // ─── Date Display ───────────────────────────────────────────────────
     /**
      * Updates the date display in the UI.
-     * Performs a true Hijri calendar conversion using the Intl.DateTimeFormat API.
+     * Automatically displays the current Hijri month name in Arabic and English.
      */
     function updateDateDisplay() {
       const now = new Date();
       
-      // 1. Gregorian Date & Day of Week
-      const gregorianLocale = currentLang === "ar" ? "ar-EG" : "en-US";
-      const gregorianDate = now.toLocaleDateString(gregorianLocale, { year: "numeric", month: "long", day: "numeric" });
-      const dayOfWeek = now.toLocaleDateString(gregorianLocale, { weekday: "long" });
+      // Hijri Month in Arabic (e.g., رمضان)
+      const monthAr = new Intl.DateTimeFormat('ar-u-ca-islamic-uma', { month: 'long' }).format(now);
+      
+      // Hijri Month in English Transliteration (e.g., Ramadan)
+      const monthEn = new Intl.DateTimeFormat('en-u-ca-islamic-uma', { month: 'long' }).format(now);
 
-      document.getElementById("dateGregorian").textContent = gregorianDate;
-      document.getElementById("dateDay").textContent = dayOfWeek;
-
-      // 2. Professional Hijri Date Implementation
-      const hijriOptions = {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        calendar: 'islamic-uma'
-      };
-
-      if (currentLang === 'ar') {
-        // Format: ١٧ شوال ١٤٤٧ هـ
-        const formatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma-nu-arab', hijriOptions);
-        document.getElementById('dateHijri').innerText = formatter.format(now) + ' هـ';
-      } else {
-        // Format: 17 Shawwal 1447 AH
-        const formatter = new Intl.DateTimeFormat('en-US-u-ca-islamic-uma-nu-latn', hijriOptions);
-        document.getElementById('dateHijri').innerText = formatter.format(now) + ' AH';
-      }
+      // Update the UI elements
+      const arEl = document.getElementById('hijriMonthAr');
+      const enEl = document.getElementById('hijriMonthEn');
+      
+      if (arEl) arEl.innerText = monthAr;
+      if (enEl) enEl.innerText = monthEn;
     }
 
     // ─── Display Update ─────────────────────────────────────────────────
