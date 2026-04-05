@@ -702,9 +702,9 @@
   <div class="bg-gradient"></div>
 
   <!-- Location Detection Button (Top Right) -->
-  <button id="detectLocationBtnRight" title="تحديد المكان">
+  <button id="detectLocationBtnRight" title="تحديد الموقع">
     <span class="location-icon">📍</span>
-    <span class="location-text">تحديث</span>
+    <span class="location-text" id="detectLocationBtnRightText">تحديد الموقع</span>
   </button>
 
   <!-- Settings Button -->
@@ -1351,15 +1351,18 @@
       document.getElementById("countryLabel").textContent = currentLang === "ar" ? "الدولة:" : "Country:";
       document.getElementById("cityLabel").textContent = currentLang === "ar" ? "المدينة:" : "City:";
       okBtnText.textContent = currentLang === "ar" ? "موافق" : "OK";
+      document.getElementById("detectLocationBtnRightText").textContent = currentLang === "ar" ? "تحديد الموقع" : "Locate";
 
       countrySearchInput.placeholder = currentLang === "ar" ? "اختر الدولة" : "Select Country";
       citySearchInput.placeholder = currentLang === "ar" ? "اختر المدينة" : "Select City";
+      document.getElementById("detectLocationBtnRight").title = currentLang === "ar" ? "تحديد الموقع" : "Locate";
 
       document.title = currentLang === "ar" ? `موعد الاستيقاظ – ${currentCity}` : `Wake-up Time – ${currentCity}`;
       document.getElementById("siteTitle").innerHTML = currentLang === "ar" ? `موعد الاستيقاظ <span id="siteCity">– ${currentCity}</span>` : `Wake-up Time <span id="siteCity">– ${currentCity}</span>`;
       document.getElementById("siteCity").textContent = `– ${currentCity}`;
 
       document.getElementById("wakeupLabel").textContent = currentLang === "ar" ? "موعد استيقاظك غداً" : "Your Wake-up Time Tomorrow";
+      document.getElementById("settingsBtn").title = currentLang === "ar" ? "الإعدادات" : "Settings";
 
       updateCountdownLabels();
       updateDateDisplay();
