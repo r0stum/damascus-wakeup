@@ -423,6 +423,54 @@
       border-color: var(--accent);
     }
 
+    /* ─── Location Detection Button (Top Right) ────────────────────────── */
+    #detectLocationBtnRight {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 100;
+      background: rgba(13, 31, 60, 0.6);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      @supports (backdrop-filter: blur(1px)) {
+        backdrop-filter: blur(8px);
+      }
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      padding: 0.4rem;
+      gap: 0.2rem;
+    }
+
+    #detectLocationBtnRight .location-icon {
+      font-size: 1.2rem;
+    }
+
+    #detectLocationBtnRight .location-text {
+      font-size: 0.6rem;
+      line-height: 1;
+      font-weight: 600;
+    }
+
+    #detectLocationBtnRight:hover {
+      background: rgba(13, 31, 60, 0.85);
+      transform: scale(1.05);
+      border-color: var(--accent);
+    }
+
+    #detectLocationBtnRight:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     /* ─── Settings Panel ────────────────────────────────────────────────── */
     #settingsPanel {
       position: fixed;
@@ -655,6 +703,12 @@
 
   <!-- Location Detection Button (Top Left) -->
   <button id="detectLocationBtn" title="Detect My Location" style="position: fixed; top: 1rem; left: 1rem; z-index: 999; width: 3rem; height: 3rem; border-radius: 50%; background: linear-gradient(45deg, var(--accent), var(--accent2)); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(79, 195, 247, 0.3); transition: all 0.3s ease; opacity: 0.8;" id="detectLocationBtnTop">📍</button>
+
+  <!-- Location Detection Button (Top Right) -->
+  <button id="detectLocationBtnRight" title="تحديد المكان">
+    <span class="location-icon">📍</span>
+    <span class="location-text">تحديث</span>
+  </button>
 
   <!-- Settings Button -->
   <button id="settingsBtn" title="Settings">⚙️</button>
@@ -1175,6 +1229,67 @@
       if (!detectLocationBtnTop.disabled) {
         detectLocationBtnTop.style.opacity = "0.8";
         detectLocationBtnTop.style.transform = "scale(1)";
+      }
+    });
+
+    // Detect Location Button (Top Right)
+    const detectLocationBtnRight = document.getElementById("detectLocationBtnRight");
+    detectLocationBtnRight.addEventListener("click", () => {
+      detectLocationBtnRight.disabled = true;
+      
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            currentCoords = { latitude, longitude };
+            localStorage.setItem("coords", JSON.stringify(currentCoords));
+
+            try {
+              const geoResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+              const geoData = await geoResponse.json();
+
+              if (geoData && geoData.address) {
+                currentCity = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.hamlet || "Unknown";
+                currentCountry = geoData.address.country || "Unknown";
+                localStorage.setItem("city", currentCity);
+                localStorage.setItem("country", currentCountry);
+                updateUI();
+                console.log("%c✓ Location detected:", "color: #51cf66; font-weight: bold;", currentCity, currentCountry);
+              }
+            } catch (error) {
+              console.error("Error reverse geocoding:", error);
+              fetchPrayerTimes();
+            } finally {
+              detectLocationBtnRight.disabled = false;
+            }
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+            alert(currentLang === "ar" ? "لا يمكن الوصول إلى موقعك. يرجى تفعيل خدمات الموقع." : "Unable to access your location. Please enable location services.");
+            detectLocationBtnRight.disabled = false;
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          }
+        );
+      } else {
+        alert(currentLang === "ar" ? "المتصفح لا يدعم تحديد المواقع." : "Geolocation is not supported by this browser.");
+        detectLocationBtnRight.disabled = false;
+      }
+    });
+
+    // Add hover effect to the top right location button
+    detectLocationBtnRight.addEventListener("mouseenter", () => {
+      if (!detectLocationBtnRight.disabled) {
+        detectLocationBtnRight.style.transform = "scale(1.1)";
+      }
+    });
+
+    detectLocationBtnRight.addEventListener("mouseleave", () => {
+      if (!detectLocationBtnRight.disabled) {
+        detectLocationBtnRight.style.transform = "scale(1)";
       }
     });
 
