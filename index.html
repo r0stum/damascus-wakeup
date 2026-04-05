@@ -703,14 +703,8 @@
         <div id="cityOptions" class="dropdown-options"></div>
       </div>
 
-      <button id="detectLocationBtn" class="detect-location-btn">
-        <span class="icon">📍</span>
-        <span class="text" id="detectLocationText">تحديد موقعي</span>
-      </button>
-      
-      <button id="refreshLocationBtn" class="detect-location-btn" style="background: linear-gradient(45deg, #f9c74f, #ffd166); margin-top: 0.8rem;">
-        <span class="icon">🔄</span>
-        <span class="text" id="refreshLocationText">تحديث الموقع</span>
+      <button id="okBtn" class="detect-location-btn" style="background: linear-gradient(45deg, #4fc3f7, #81d4fa); margin-top: 1.2rem; font-weight: 600; font-size: 1rem;">
+        <span class="text" id="okBtnText">موافق</span>
       </button>
       
       <div id="insecureContextMessage" style="display: none; margin-top: 1.5rem; padding: 1rem; background: rgba(255, 107, 107, 0.15); border: 1px solid rgba(255, 107, 107, 0.3); border-radius: 8px; text-align: center;">
@@ -726,9 +720,6 @@
       <div class="header-icon">🌙</div>
       <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
         <h1 class="site-title" id="siteTitle">موعد الاستيقاظ <span id="siteCity">– دمشق</span></h1>
-        <button id="updateLocationHeaderBtn" style="background: none; border: none; cursor: pointer; font-size: 1.4rem; padding: 0.3rem; opacity: 0.7; transition: opacity 0.2s ease; display: inline-block;" title="Update Location" aria-label="Update Location">
-          📍
-        </button>
       </div>
     </header>
 
@@ -1060,8 +1051,8 @@
     const countryOptionsDiv = document.getElementById("countryOptions");
     const citySearchInput = document.getElementById("citySearch");
     const cityOptionsDiv = document.getElementById("cityOptions");
-    const detectLocationBtn = document.getElementById("detectLocationBtn");
-    const detectLocationText = document.getElementById("detectLocationText");
+    const okBtn = document.getElementById("okBtn");
+    const okBtnText = document.getElementById("okBtnText");
 
     let currentLang = localStorage.getItem("lang") || "ar";
     let currentTheme = localStorage.getItem("theme") || "dark";
@@ -1107,17 +1098,19 @@
       updateUI();
     });
 
-    detectLocationBtn.addEventListener("click", () => {
-      detectLocation();
+    okBtn.addEventListener("click", () => {
+      // When OK is clicked, fetch prayer times based on selected country/city
+      if (currentCountry && currentCity) {
+        fetchPrayerTimes();
+        settingsPanel.classList.remove("open");
+      } else {
+        alert(currentLang === "ar" ? "يرجى اختيار الدولة والمدينة" : "Please select country and city");
+      }
     });
 
-    function detectLocation(isAuto = false) {
-      if (navigator.geolocation) {
-        if (!isAuto) {
-          detectLocationText.textContent = currentLang === "ar" ? "جاري التحديد..." : "Detecting...";
-          detectLocationBtn.disabled = true;
-        }
-
+    // Auto-detect location on page load if HTTPS
+    function autoDetectLocation() {
+      if (navigator.geolocation && location.protocol === 'https:') {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
             const { latitude, longitude } = position.coords;
@@ -1134,29 +1127,16 @@
                 localStorage.setItem("city", currentCity);
                 localStorage.setItem("country", currentCountry);
                 updateUI();
-                if (!isAuto) settingsPanel.classList.remove("open");
               }
             } catch (error) {
               console.error("Error reverse geocoding:", error);
-              fetchPrayerTimes(); // Still fetch by coords if geocoding fails
-            } finally {
-              if (!isAuto) {
-                detectLocationText.textContent = currentLang === "ar" ? "تحديد موقعي" : "Detect My Location";
-                detectLocationBtn.disabled = false;
-              }
+              fetchPrayerTimes();
             }
           },
           (error) => {
             console.error("Geolocation error:", error);
-            if (!isAuto) {
-              alert(currentLang === "ar" ? "لا يمكن الوصول إلى موقعك. يرجى تفعيل خدمات الموقع." : "Unable to access your location. Please enable location services.");
-              detectLocationText.textContent = currentLang === "ar" ? "تحديد موقعي" : "Detect My Location";
-              detectLocationBtn.disabled = false;
-            }
           }
         );
-      } else if (!isAuto) {
-        alert(currentLang === "ar" ? "المتصفح لا يدعم تحديد المواقع." : "Geolocation is not supported by this browser.");
       }
     }
 
@@ -1255,7 +1235,7 @@
       document.getElementById("locationSettingTitle").textContent = currentLang === "ar" ? "الموقع" : "Location";
       document.getElementById("countryLabel").textContent = currentLang === "ar" ? "الدولة:" : "Country:";
       document.getElementById("cityLabel").textContent = currentLang === "ar" ? "المدينة:" : "City:";
-      detectLocationText.textContent = currentLang === "ar" ? "تحديد موقعي" : "Detect My Location";
+      okBtnText.textContent = currentLang === "ar" ? "موافق" : "OK";
 
       countrySearchInput.placeholder = currentLang === "ar" ? "اختر الدولة" : "Select Country";
       citySearchInput.placeholder = currentLang === "ar" ? "اختر المدينة" : "Select City";
@@ -1550,69 +1530,9 @@
       // Update UI with default/saved location
       updateUI();
       
-      // Request geolocation permission immediately
-      requestLocationOnLoad();
-      
-      // Setup manual refresh button in settings panel
-      const refreshLocationBtn = document.getElementById("refreshLocationBtn");
-      if (refreshLocationBtn) {
-        refreshLocationBtn.addEventListener("click", function() {
-          console.log("%c🔄 Manual location refresh requested", "color: #f9c74f; font-weight: bold;");
-          requestLocationOnLoad();
-        });
-      }
-      
-      // Setup header update location button
-      const updateLocationHeaderBtn = document.getElementById("updateLocationHeaderBtn");
-      if (updateLocationHeaderBtn) {
-        updateLocationHeaderBtn.addEventListener("click", function() {
-          console.log("%c📍 Manual location update requested from header", "color: #f9c74f; font-weight: bold;");
-          requestLocationOnLoad();
-        });
-        // Add hover effect
-        updateLocationHeaderBtn.addEventListener("mouseenter", function() {
-          this.style.opacity = "1";
-        });
-        updateLocationHeaderBtn.addEventListener("mouseleave", function() {
-          this.style.opacity = "0.7";
-        });
-      }
+      // Auto-detect location if HTTPS
+      autoDetectLocation();
     });
-    
-    // Fallback: If DOMContentLoaded already fired before script loaded
-    if (document.readyState === "loading") {
-      // DOM is still loading, event listener will handle it
-    } else {
-      // DOM is already loaded, execute directly
-      console.log("%c🌙 Damascus Wakeup - Initializing (DOM already loaded)...", "color: #f9c74f; font-weight: bold; font-size: 14px;");
-      updateUI();
-      requestLocationOnLoad();
-      
-      // Setup manual refresh button in settings panel
-      const refreshLocationBtn = document.getElementById("refreshLocationBtn");
-      if (refreshLocationBtn) {
-        refreshLocationBtn.addEventListener("click", function() {
-          console.log("%c🔄 Manual location refresh requested", "color: #f9c74f; font-weight: bold;");
-          requestLocationOnLoad();
-        });
-      }
-      
-      // Setup header update location button
-      const updateLocationHeaderBtn = document.getElementById("updateLocationHeaderBtn");
-      if (updateLocationHeaderBtn) {
-        updateLocationHeaderBtn.addEventListener("click", function() {
-          console.log("%c📍 Manual location update requested from header", "color: #f9c74f; font-weight: bold;");
-          requestLocationOnLoad();
-        });
-        // Add hover effect
-        updateLocationHeaderBtn.addEventListener("mouseenter", function() {
-          this.style.opacity = "1";
-        });
-        updateLocationHeaderBtn.addEventListener("mouseleave", function() {
-          this.style.opacity = "0.7";
-        });
-      }
-    }
 
     // Refresh daily at midnight
     function scheduleDailyRefresh() {
