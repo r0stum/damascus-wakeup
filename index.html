@@ -139,42 +139,52 @@
 
     /* ─── Date Card ─────────────────────────────────────────────────────── */
     .date-card {
-      background: rgba(13, 31, 60, 0.7);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 0.9rem 2rem;
+      background: rgba(13, 31, 60, 0.55);
+      border: 1px solid rgba(79, 195, 247, 0.25);
+      border-radius: 24px;
+      padding: 1.2rem 2.5rem;
       text-align: center;
-      @supports (backdrop-filter: blur(1px)) {
-        backdrop-filter: blur(12px);
-      }
-      @media (max-width: 768px) {
-        background: rgba(13, 31, 60, 0.9);
-      }
-      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-    }
-
-    .date-card {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 0.2rem;
+      gap: 0.4rem;
+      @supports (backdrop-filter: blur(1px)) {
+        backdrop-filter: blur(16px);
+      }
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.5),
+        inset 0 0 15px rgba(79, 195, 247, 0.05);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      max-width: 90%;
+      margin: 0 auto;
     }
 
-    .hijri-month-ar {
+    .date-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(249, 199, 79, 0.4);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(249, 199, 79, 0.1);
+    }
+
+    .date-hijri-full {
       color: #ffcc00;
-      font-size: 1.45em;
+      font-size: clamp(1.2rem, 4vw, 1.6rem);
       font-weight: 800;
-      text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
-      line-height: 1.2;
+      text-shadow: 0 0 15px rgba(255, 204, 0, 0.45);
+      line-height: 1.3;
+      letter-spacing: 0.01em;
     }
 
-    .hijri-month-en {
-      color: #ffcc00;
-      font-size: 1.05em;
-      font-weight: 600;
-      text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
-      line-height: 1.2;
+    .date-gregorian-full {
+      color: rgba(232, 244, 253, 0.85);
+      font-size: clamp(0.85rem, 2.5vw, 1.05rem);
+      font-weight: 500;
+      opacity: 0.9;
+      letter-spacing: 0.03em;
+      border-top: 1px solid rgba(232, 244, 253, 0.15);
+      padding-top: 0.4rem;
+      margin-top: 0.2rem;
+      width: 100%;
     }
 
     /* ─── Main Cards Grid ───────────────────────────────────────────────── */
@@ -782,10 +792,10 @@
       </div>
     </header>
 
-    <div class="date-card" id="hijriMonthBox">
-      <!-- Hijri Month Display (Auto-updated via JS) -->
-      <div class="hijri-month-ar" id="hijriMonthAr"></div>
-      <div class="hijri-month-en" id="hijriMonthEn"></div>
+    <div class="date-card" id="premiumDateWidget">
+      <!-- Premium Islamic Date Widget -->
+      <div class="date-hijri-full" id="fullHijriDate"></div>
+      <div class="date-gregorian-full" id="fullGregorianDate"></div>
     </div>
 
     <div class="cards-row">
@@ -1395,24 +1405,39 @@
 
     // ─── Date Display ───────────────────────────────────────────────────
     /**
-     * Updates the date display in the UI.
-     * Automatically displays the current Hijri month name in Arabic and English.
+     * Updates the premium date widget in the UI.
+     * Performs a true Hijri calendar conversion and formats both Hijri and Gregorian dates.
      */
     function updateDateDisplay() {
       const now = new Date();
       
-      // Hijri Month in Arabic (e.g., رمضان)
-      const monthAr = new Intl.DateTimeFormat('ar-u-ca-islamic-uma', { month: 'long' }).format(now);
-      
-      // Hijri Month in English Transliteration (e.g., Ramadan)
-      const monthEn = new Intl.DateTimeFormat('en-u-ca-islamic-uma', { month: 'long' }).format(now);
+      // 1. Full Hijri Date in Arabic (Primary)
+      // Format: الثلاثاء، ١٠ رمضان ١٤٤٧ هـ
+      const hijriFormatter = new Intl.DateTimeFormat('ar-u-ca-islamic-uma-nu-arab', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      let formattedHijri = hijriFormatter.format(now);
+      if (!formattedHijri.includes('هـ')) formattedHijri += ' هـ';
+
+      // 2. Full Gregorian Date in English (Secondary)
+      // Format: Tuesday, 5 April 2026
+      const gregorianFormatter = new Intl.DateTimeFormat('en-US', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      const formattedGregorian = gregorianFormatter.format(now);
 
       // Update the UI elements
-      const arEl = document.getElementById('hijriMonthAr');
-      const enEl = document.getElementById('hijriMonthEn');
+      const hijriEl = document.getElementById('fullHijriDate');
+      const gregEl = document.getElementById('fullGregorianDate');
       
-      if (arEl) arEl.innerText = monthAr;
-      if (enEl) enEl.innerText = monthEn;
+      if (hijriEl) hijriEl.innerText = formattedHijri;
+      if (gregEl) gregEl.innerText = formattedGregorian;
     }
 
     // ─── Display Update ─────────────────────────────────────────────────
