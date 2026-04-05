@@ -1404,28 +1404,23 @@
       document.getElementById("dateGregorian").textContent = gregorianDate;
       document.getElementById("dateDay").textContent = dayOfWeek;
 
-      // 2. True Hijri Calendar Conversion
-      let formattedHijri;
-      if (currentLang === "ar") {
-        // Arabic: Islamic calendar, Arabic numbering system (١، ٢، ٣), Arabic month names
-        formattedHijri = new Intl.DateTimeFormat('ar-u-ca-islamic-uma-nu-arab', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        }).format(now);
-        formattedHijri += " هـ";
+      // 2. Professional Hijri Date Implementation
+      const hijriOptions = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        calendar: 'islamic-uma'
+      };
+
+      if (currentLang === 'ar') {
+        // Format: ١٧ شوال ١٤٤٧ هـ
+        const formatter = new Intl.DateTimeFormat('ar-u-ca-islamic-uma-nu-arab', hijriOptions);
+        document.getElementById('dateHijri').innerText = formatter.format(now) + ' هـ';
       } else {
-        // English: Islamic calendar, Latin numbering system (1, 2, 3), English transliterated month names (e.g., Shawwal)
-        formattedHijri = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        }).format(now);
-        formattedHijri += " AH";
+        // Format: 17 Shawwal 1447 AH
+        const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', hijriOptions);
+        document.getElementById('dateHijri').innerText = formatter.format(now) + ' AH';
       }
-      
-      // Update the UI element
-      document.getElementById("dateHijri").innerText = formattedHijri;
     }
 
     // ─── Display Update ─────────────────────────────────────────────────
