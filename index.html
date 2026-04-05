@@ -1408,48 +1408,80 @@
     /**
      * Updates the premium date widget in the UI.
      * Performs a true Hijri calendar conversion and formats both Hijri and Gregorian dates.
-     * Uses Western Arabic numerals (0-9) as per design requirement.
+     * Supports both Arabic and English localizations.
      */
     function updateDateDisplay() {
       const now = new Date();
 
-      // Arabic day names
-      const arabicWeekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-      const dayName = arabicWeekdays[now.getDay()];
+      if (currentLang === "en") {
+        // --- English Localization ---
+        const englishWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = englishWeekdays[now.getDay()];
 
-      // 1. Full Hijri Date — Western numerals, Arabic month name
-      // Format: الأحد، 10 رمضان 1447 هـ
-      const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
-      // Extract parts for reliable Western-numeral output
-      const hijriParts = hijriFormatter.formatToParts(now);
-      const hijriDay   = hijriParts.find(p => p.type === 'day')?.value   || '';
-      const hijriMonth = hijriParts.find(p => p.type === 'month')?.value || '';
-      const hijriYear  = hijriParts.find(p => p.type === 'year')?.value  || '';
-      const formattedHijri = `${dayName}، ${hijriDay} ${hijriMonth} ${hijriYear} هـ`;
+        // 1. Full Hijri Date in English
+        // Format: Sunday, 17 Shawwal 1447 AH
+        const hijriMonthNamesEn = [
+          "Muharram", "Safar", "Rabi al-Awwal", "Rabi al-Thani",
+          "Jumada al-Ula", "Jumada al-Akhira", "Rajab", "Sha'ban",
+          "Ramadan", "Shawwal", "Dhul Qi'dah", "Dhul Hijjah"
+        ];
+        
+        const hijriFormatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', {
+          day: 'numeric',
+          month: 'numeric', // Use numeric to get month index
+          year: 'numeric'
+        });
+        const hijriParts = hijriFormatter.formatToParts(now);
+        const hijriDay   = hijriParts.find(p => p.type === 'day')?.value   || '';
+        const hijriMonthIdx = parseInt(hijriParts.find(p => p.type === 'month')?.value || '1') - 1;
+        const hijriYear  = hijriParts.find(p => p.type === 'year')?.value  || '';
+        const hijriMonthName = hijriMonthNamesEn[hijriMonthIdx];
+        const formattedHijri = `${dayName}, ${hijriDay} ${hijriMonthName} ${hijriYear} AH`;
 
-      // 2. Full Gregorian Date — Western numerals, Arabic month name
-      // Format: الأحد، 5 أبريل 2026
-      const gregFormatter = new Intl.DateTimeFormat('ar-SA-u-nu-latn', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
-      const gregParts = gregFormatter.formatToParts(now);
-      const gregDay   = gregParts.find(p => p.type === 'day')?.value   || '';
-      const gregMonth = gregParts.find(p => p.type === 'month')?.value || '';
-      const gregYear  = gregParts.find(p => p.type === 'year')?.value  || '';
-      const formattedGregorian = `${dayName}، ${gregDay} ${gregMonth} ${gregYear}`;
+        // 2. Full Gregorian Date in English
+        // Format: Sunday, 5 April 2026
+        const gregFormatter = new Intl.DateTimeFormat('en-US', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        const formattedGregorian = `${dayName}, ${gregFormatter.format(now)}`;
 
-      // Update the UI elements
-      const hijriEl = document.getElementById('fullHijriDate');
-      const gregEl  = document.getElementById('fullGregorianDate');
+        document.getElementById('fullHijriDate').innerText = formattedHijri;
+        document.getElementById('fullGregorianDate').innerText = formattedGregorian;
 
-      if (hijriEl) hijriEl.innerText = formattedHijri;
-      if (gregEl)  gregEl.innerText  = formattedGregorian;
+      } else {
+        // --- Arabic Localization ---
+        const arabicWeekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        const dayName = arabicWeekdays[now.getDay()];
+
+        // 1. Full Hijri Date in Arabic
+        const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        const hijriParts = hijriFormatter.formatToParts(now);
+        const hijriDay   = hijriParts.find(p => p.type === 'day')?.value   || '';
+        const hijriMonth = hijriParts.find(p => p.type === 'month')?.value || '';
+        const hijriYear  = hijriParts.find(p => p.type === 'year')?.value  || '';
+        const formattedHijri = `${dayName}، ${hijriDay} ${hijriMonth} ${hijriYear} هـ`;
+
+        // 2. Full Gregorian Date in Arabic
+        const gregFormatter = new Intl.DateTimeFormat('ar-SA-u-nu-latn', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        const gregParts = gregFormatter.formatToParts(now);
+        const gregDay   = gregParts.find(p => p.type === 'day')?.value   || '';
+        const gregMonth = gregParts.find(p => p.type === 'month')?.value || '';
+        const gregYear  = gregParts.find(p => p.type === 'year')?.value  || '';
+        const formattedGregorian = `${dayName}، ${gregDay} ${gregMonth} ${gregYear}`;
+
+        document.getElementById('fullHijriDate').innerText = formattedHijri;
+        document.getElementById('fullGregorianDate').innerText = formattedGregorian;
+      }
     }
 
     // ─── Display Update ─────────────────────────────────────────────────
