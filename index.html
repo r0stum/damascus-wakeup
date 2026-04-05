@@ -711,6 +711,91 @@
     footer a:hover {
       color: var(--accent2);
     }
+
+    /* ─── Mobile Responsive ─────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .page-wrapper {
+        padding: 5rem 0.75rem 3rem;
+        gap: 1rem;
+      }
+
+      .date-card {
+        padding: 1rem 1.2rem;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .date-hijri-full {
+        font-size: clamp(0.95rem, 4.5vw, 1.1rem);
+        white-space: normal;
+        text-align: center;
+      }
+
+      .date-gregorian-full {
+        font-size: clamp(0.85rem, 4vw, 1rem);
+        white-space: normal;
+        text-align: center;
+      }
+
+      .cards-row {
+        width: 100%;
+        gap: 0.75rem;
+      }
+
+      .info-card {
+        flex: 1 1 100%;
+        padding: 1.2rem 1rem;
+        border-radius: 16px;
+      }
+
+      .wakeup-hero {
+        padding: 1.8rem 1.2rem;
+        border-radius: 20px;
+        width: 100%;
+      }
+
+      .clock-display {
+        font-size: clamp(3.5rem, 18vw, 5rem);
+      }
+
+      .countdown-section {
+        padding: 1.5rem 1rem;
+        width: 100%;
+      }
+
+      .countdown-timer {
+        gap: 1rem;
+      }
+
+      .countdown-number {
+        font-size: clamp(1.6rem, 7vw, 2rem);
+      }
+
+      #settingsPanel {
+        max-width: 100%;
+        width: 85%;
+      }
+
+      header {
+        padding-top: 0;
+      }
+
+      .site-title {
+        font-size: clamp(1rem, 5vw, 1.3rem);
+      }
+    }
+
+    @media (max-width: 360px) {
+      .clock-display {
+        font-size: clamp(3rem, 16vw, 4rem);
+      }
+      .date-hijri-full {
+        font-size: 0.9rem;
+      }
+      .date-gregorian-full {
+        font-size: 0.8rem;
+      }
+    }
   </style>
 </head>
 <body>
