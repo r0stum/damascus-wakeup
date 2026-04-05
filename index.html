@@ -785,7 +785,7 @@
 
     <div class="cards-row">
       <div class="info-card">
-        <div class="card-label">وقت العشاء</div>
+        <div class="card-label" id="ishaLabel">وقت العشاء</div>
         <div class="card-icon">🌙</div>
         <div class="card-time isha" id="ishaTime">--:--</div>
       </div>
@@ -793,13 +793,13 @@
 
     <div class="wakeup-hero">
       <div class="wakeup-label" id="wakeupLabel">موعد استيقاظك غداً</div>
-      <div class="wakeup-sublabel" id="wakeupSublabel">الجمعة</div>
+      <div class="wakeup-sublabel" id="wakeupSublabel"></div>
       <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
         <span class="clock-display" id="wakeupTimeDisplay">--:--</span>
         <span class="clock-ampm" id="wakeupTimeAmPm">ص</span>
       </div>
       <div class="wakeup-note" id="wakeupNote">
-        <span>--:--</span> + 7 ساعات و 20 دقيقة
+        <span>--:--</span> + 7 hours and 20 minutes
       </div>
     </div>
 
@@ -1363,6 +1363,7 @@
 
       document.getElementById("wakeupLabel").textContent = currentLang === "ar" ? "موعد استيقاظك غداً" : "Your Wake-up Time Tomorrow";
       document.getElementById("settingsBtn").title = currentLang === "ar" ? "الإعدادات" : "Settings";
+      document.getElementById("ishaLabel").textContent = currentLang === "ar" ? "وقت العشاء" : "Isha Prayer Time";
 
       updateCountdownLabels();
       updateDateDisplay();
@@ -1457,9 +1458,14 @@
       const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-      document.getElementById("countdownHours").textContent = convertToArabicNumerals(hours);
-      document.getElementById("countdownMinutes").textContent = convertToArabicNumerals(minutes);
-      document.getElementById("countdownSeconds").textContent = convertToArabicNumerals(seconds);
+      // Use Arabic numerals only in Arabic mode
+      const hoursText = currentLang === "ar" ? convertToArabicNumerals(hours) : hours;
+      const minutesText = currentLang === "ar" ? convertToArabicNumerals(minutes) : minutes;
+      const secondsText = currentLang === "ar" ? convertToArabicNumerals(seconds) : seconds;
+
+      document.getElementById("countdownHours").textContent = hoursText;
+      document.getElementById("countdownMinutes").textContent = minutesText;
+      document.getElementById("countdownSeconds").textContent = secondsText;
 
       updateCountdownLabels();
     }
@@ -1479,8 +1485,10 @@
       hours = hours ? hours : 12;
       minutes = minutes < 10 ? "0" + minutes : minutes;
 
-      const formattedHours = useArabicNumerals ? convertToArabicNumerals(hours) : hours;
-      const formattedMinutes = useArabicNumerals ? convertToArabicNumerals(minutes) : minutes;
+      // Use Arabic numerals only in Arabic mode
+      const shouldUseArabicNumerals = useArabicNumerals && currentLang === "ar";
+      const formattedHours = shouldUseArabicNumerals ? convertToArabicNumerals(hours) : hours;
+      const formattedMinutes = shouldUseArabicNumerals ? convertToArabicNumerals(minutes) : minutes;
 
       return `${formattedHours}:${formattedMinutes}${includeAmPm ? ` ${ampm}` : ""}`;
     }
