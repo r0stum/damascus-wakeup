@@ -1414,11 +1414,11 @@
 
       if (currentLang === 'ar') {
         // Format: ١٧ شوال ١٤٤٧ هـ
-        const formatter = new Intl.DateTimeFormat('ar-u-ca-islamic-uma-nu-arab', hijriOptions);
+        const formatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma-nu-arab', hijriOptions);
         document.getElementById('dateHijri').innerText = formatter.format(now) + ' هـ';
       } else {
         // Format: 17 Shawwal 1447 AH
-        const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', hijriOptions);
+        const formatter = new Intl.DateTimeFormat('en-US-u-ca-islamic-uma-nu-latn', hijriOptions);
         document.getElementById('dateHijri').innerText = formatter.format(now) + ' AH';
       }
     }
