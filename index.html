@@ -1397,18 +1397,16 @@
       document.getElementById("dateGregorian").textContent = gregorianDate;
       document.getElementById("dateDay").textContent = dayOfWeek;
 
-      // Use Intl.DateTimeFormat for accurate Hijri date and professional localization
-      const hijriLocale = currentLang === "ar" ? "ar-SA-u-ca-islamic-uma" : "en-US-u-ca-islamic-uma";
-      const hijriFormatter = new Intl.DateTimeFormat(hijriLocale, { day: 'numeric', month: 'long', year: 'numeric' });
+      // Correct Hijri conversion using Intl.DateTimeFormat
+      let hijriFormatter;
+      if (currentLang === "ar") {
+        hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma-nu-arab', { day: 'numeric', month: 'long', year: 'numeric' });
+      } else {
+        hijriFormatter = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
       
       let formattedHijri = hijriFormatter.format(now);
-      
-      // Add professional suffix for Hijri years in both languages
-      if (currentLang === "ar") {
-        formattedHijri += " هـ";
-      } else {
-        formattedHijri += " AH";
-      }
+      formattedHijri += (currentLang === "ar" ? " هـ" : " AH");
       
       document.getElementById("dateHijri").textContent = formattedHijri;
     }
