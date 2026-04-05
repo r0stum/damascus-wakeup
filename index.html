@@ -795,8 +795,8 @@
 
     <div class="date-card" id="premiumDateWidget">
       <!-- Premium Islamic Date Widget -->
-      <div class="date-hijri-full" id="fullHijriDate"></div>
-      <div class="date-gregorian-full" id="fullGregorianDate"></div>
+      <div class="date-hijri-full" id="hijri-date"></div>
+      <div class="date-gregorian-full" id="gregorian-date"></div>
     </div>
 
     <div class="cards-row">
@@ -1407,38 +1407,34 @@
     // ─── Date Display ───────────────────────────────────────────────────
     /**
      * Updates the premium date widget in the UI.
-     * Performs a true Hijri calendar conversion and formats both Hijri and Gregorian dates.
+     * Displays both full Hijri and Gregorian dates using Arabic names.
      */
     function updateDateDisplay() {
       const now = new Date();
       
-      // 1. Full Hijri Date in Arabic
-      // Format: الأحد، ١٠ رمضان ١٤٤٧ هـ
-      const hijriFormatter = new Intl.DateTimeFormat('ar-u-ca-islamic-uma-nu-arab', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
-      let formattedHijri = hijriFormatter.format(now);
-      if (!formattedHijri.includes('هـ')) formattedHijri += ' هـ';
-
-      // 2. Full Gregorian Date in Arabic
-      // Format: الأحد، ٥ أبريل ٢٠٢٦
-      const gregorianFormatter = new Intl.DateTimeFormat('ar-EG', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
-      const formattedGregorian = gregorianFormatter.format(now);
-
-      // Update the UI elements
-      const hijriEl = document.getElementById('fullHijriDate');
-      const gregEl = document.getElementById('fullGregorianDate');
+      // Gregorian date in Arabic
+      const daysAr = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      const monthsAr = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
       
-      if (hijriEl) hijriEl.innerText = formattedHijri;
-      if (gregEl) gregEl.innerText = formattedGregorian;
+      const gregDay = daysAr[now.getDay()];
+      const gregDate = now.getDate();
+      const gregMonth = monthsAr[now.getMonth()];
+      const gregYear = now.getFullYear();
+      
+      document.getElementById('gregorian-date').textContent = 
+        `${gregDay}، ${gregDate} ${gregMonth} ${gregYear}`;
+      
+      // Hijri date implementation
+      // Using Intl.DateTimeFormat for dynamic Hijri month and day
+      const hijriFormatter = new Intl.DateTimeFormat('ar-u-ca-islamic-uma-nu-arab', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      const hijriPart = hijriFormatter.format(now);
+      const formattedHijri = `${gregDay}، ${hijriPart}${hijriPart.includes('هـ') ? '' : ' هـ'}`;
+      
+      document.getElementById('hijri-date').textContent = formattedHijri;
     }
 
     // ─── Display Update ─────────────────────────────────────────────────
