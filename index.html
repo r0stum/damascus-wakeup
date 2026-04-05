@@ -1397,10 +1397,12 @@
       document.getElementById("dateGregorian").textContent = gregorianDate;
       document.getElementById("dateDay").textContent = dayOfWeek;
 
-      // Simple Hijri conversion (approximate)
-      const hijriDate = new Date(now.getTime() - (now.getTime() - new Date(now.getFullYear(), 0, 1)) * 0.97);
-      const hijriYear = hijriDate.getFullYear() + 579;
-      document.getElementById("dateHijri").textContent = `${convertToArabicNumerals(now.getDate())} محرم ${convertToArabicNumerals(hijriYear)} هـ`;
+      // Use Intl.DateTimeFormat for accurate Hijri date and localization
+      const hijriFormatter = new Intl.DateTimeFormat(
+        currentLang === "ar" ? "ar-SA-u-ca-islamic-uma" : "en-US-u-ca-islamic-uma",
+        { day: 'numeric', month: 'long', year: 'numeric' }
+      );
+      document.getElementById("dateHijri").textContent = hijriFormatter.format(now);
     }
 
     // ─── Display Update ─────────────────────────────────────────────────
