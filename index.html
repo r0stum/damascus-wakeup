@@ -62,18 +62,20 @@
       --border:       var(--light-border);
     }
 
-    html { font-size: 16px; }
+    html {
+      font-size: 16px;
+      height: -webkit-fill-available;
+    }
 
     body {
       font-family: Cairo, "Segoe UI", sans-serif;
       background: var(--bg-deep);
       color: var(--text-main);
       min-height: 100vh;
+      min-height: -webkit-fill-available;
       overflow-x: hidden;
       touch-action: manipulation;
       position: relative;
-      will-change: transform;
-      transform: translateZ(0);
     }
 
     /* ─── Starfield Canvas ──────────────────────────────────────────────── */
@@ -98,10 +100,9 @@
     /* ─── Layout ────────────────────────────────────────────────────────── */
     .page-wrapper {
       position: relative;
-      will-change: transform;
-      transform: translateZ(0);
       z-index: 1;
       min-height: 100vh;
+      min-height: -webkit-fill-available;
       display: flex;
       flex-direction: column;
       align-items: center;
