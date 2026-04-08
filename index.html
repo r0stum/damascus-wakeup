@@ -227,7 +227,6 @@
       font-size: clamp(0.78rem, 2vw, 0.9rem);
       color: var(--text-muted);
       font-weight: 600;
-      text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 0.5rem;
     }
@@ -543,7 +542,6 @@
       font-size: 0.9rem;
       color: var(--text-muted);
       font-weight: 700;
-      text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 1rem;
       border-bottom: 1px solid var(--border);
@@ -864,8 +862,8 @@
       </button>
       
       <div id="insecureContextMessage" style="display: none; margin-top: 1.5rem; padding: 1rem; background: rgba(255, 107, 107, 0.15); border: 1px solid rgba(255, 107, 107, 0.3); border-radius: 8px; text-align: center;">
-        <div style="color: #ff6b6b; font-weight: 600; margin-bottom: 0.5rem;">⚠️ HTTPS Required</div>
-        <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;" id="insecureContextText">This site is running on HTTP. Deploy to HTTPS (like GitHub Pages) to enable live location detection.</div>
+        <div style="color: #ff6b6b; font-weight: 600; margin-bottom: 0.5rem;" id="insecureContextTitle">⚠️ HTTPS مطلوب</div>
+        <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;" id="insecureContextText">هذا الموقع يعمل على HTTP. انشره على HTTPS (مثل GitHub Pages) لتفعيل تحديد الموقع التلقائي.</div>
       </div>
     </div>
   </div>
@@ -901,7 +899,7 @@
         <span class="clock-ampm" id="wakeupTimeAmPm">ص</span>
       </div>
       <div class="wakeup-note" id="wakeupNote">
-        <span>--:--</span> + 7 hours and 20 minutes
+        <span>--:--</span> + ٧ ساعات و ٢٠ دقيقة
       </div>
     </div>
 
@@ -926,7 +924,7 @@
       </div>
     </div>
 
-    <footer>
+    <footer id="footerText">
       Prayer times powered by <a href="https://aladhan.com/" target="_blank">AlAdhan API</a>
     </footer>
   </div>
@@ -1458,6 +1456,19 @@
       countrySearchInput.placeholder = currentLang === "ar" ? "اختر الدولة" : "Select Country";
       citySearchInput.placeholder = currentLang === "ar" ? "اختر المدينة" : "Select City";
       document.getElementById("detectLocationBtnRight").title = currentLang === "ar" ? "تحديد الموقع" : "Locate";
+
+      // Footer
+      document.getElementById("footerText").innerHTML = currentLang === "ar"
+        ? `أوقات الصلاة مقدمة من <a href="https://aladhan.com/" target="_blank">AlAdhan API</a>`
+        : `Prayer times powered by <a href="https://aladhan.com/" target="_blank">AlAdhan API</a>`;
+
+      // Insecure context message
+      const insecureTitle = document.getElementById("insecureContextTitle");
+      const insecureText = document.getElementById("insecureContextText");
+      if (insecureTitle) insecureTitle.textContent = currentLang === "ar" ? "⚠️ HTTPS مطلوب" : "⚠️ HTTPS Required";
+      if (insecureText) insecureText.textContent = currentLang === "ar"
+        ? "هذا الموقع يعمل على HTTP. انشره على HTTPS (مثل GitHub Pages) لتفعيل تحديد الموقع التلقائي."
+        : "This site is running on HTTP. Deploy to HTTPS (like GitHub Pages) to enable live location detection.";
 
       document.title = currentLang === "ar" ? `موعد الاستيقاظ – ${currentCity}` : `Wake-up Time – ${currentCity}`;
       document.getElementById("siteTitle").innerHTML = currentLang === "ar" ? `موعد الاستيقاظ <span id="siteCity">– ${currentCity}</span>` : `Wake-up Time <span id="siteCity">– ${currentCity}</span>`;
