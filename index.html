@@ -1501,9 +1501,19 @@
       return countryTranslations[name] || name;
     }
 
+    const cityTranslations = {
+      "Darwasha": "درواشا",
+      "Damascus": "دمشق"
+    };
+
+    function translateCity(name) {
+      if (currentLang !== "ar") return name;
+      return cityTranslations[name] || name;
+    }
+
     // ─── UI Update Function ──────────────────────────────────────────────
     function updateUI() {
-      const displayCity = currentCity; // Add city translations if needed
+      const displayCity = translateCity(currentCity);
       const displayCountry = translateCountry(currentCountry);
 
       document.getElementById("settingsPanelTitle").textContent = currentLang === "ar" ? "الإعدادات" : "Settings";
@@ -1532,10 +1542,11 @@
         ? "هذا الموقع يعمل على HTTP. انشره على HTTPS (مثل GitHub Pages) لتفعيل تحديد الموقع التلقائي."
         : "This site is running on HTTP. Deploy to HTTPS (like GitHub Pages) to enable live location detection.";
 
-      document.title = currentLang === "ar" ? `موعد الاستيقاظ – ${displayCity}` : `Wake-up Time – ${displayCity}`;
-      document.getElementById("siteTitle").innerHTML = currentLang === "ar" ? `موعد الاستيقاظ <span id="siteCity">– ${displayCity}</span>` : `Wake-up Time <span id="siteCity">– ${displayCity}</span>`;
-      document.getElementById("siteCity").textContent = `– ${displayCity}`;
-
+      document.title = currentLang === "ar" ? `موعد الاستيقاظ – ${displayCity}` : `${displayCity} – Wake-up Time`;
+      document.getElementById("siteTitle").innerHTML = currentLang === "ar" 
+        ? `موعد الاستيقاظ <span id="siteCity">– ${displayCity}</span>` 
+        : `<span id="siteCity">${displayCity}</span> – Wake-up Time`;
+      
       document.getElementById("wakeupLabel").textContent = currentLang === "ar" ? "موعد استيقاظك غداً" : "Your Wake-up Time Tomorrow";
       document.getElementById("settingsBtn").title = currentLang === "ar" ? "الإعدادات" : "Settings";
       document.getElementById("ishaLabel").textContent = currentLang === "ar" ? "وقت العشاء" : "Isha Prayer Time";
