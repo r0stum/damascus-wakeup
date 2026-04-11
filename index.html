@@ -1442,8 +1442,70 @@
       cityOptionsDiv.classList.add("active");
     });
 
+    const countryTranslations = {
+      "Afghanistan": "أفغانستان", "Albania": "ألبانيا", "Algeria": "الجزائر", "Andorra": "أندورا",
+      "Angola": "أنغولا", "Antigua and Barbuda": "أنتيغوا وباربودا", "Argentina": "الأرجنتين",
+      "Armenia": "أرمينيا", "Australia": "أستراليا", "Austria": "النمسا", "Azerbaijan": "أذربيجان",
+      "Bahamas": "جزر البهاما", "Bahrain": "البحرين", "Bangladesh": "بنغلاديش", "Barbados": "باربادوس",
+      "Belarus": "بيلاروسيا", "Belgium": "بلجيكا", "Belize": "بليز", "Benin": "بنين", "Bhutan": "بوتان",
+      "Bolivia": "بوليفيا", "Bosnia and Herzegovina": "البوسنة والهرسك", "Botswana": "بوتسوانا",
+      "Brazil": "البرازيل", "Brunei": "بروناي", "Bulgaria": "بلغاريا", "Burkina Faso": "بوركينا فاسو",
+      "Burundi": "بوروندي", "Cabo Verde": "الرأس الأخضر", "Cambodia": "كمبوديا", "Cameroon": "الكاميرون",
+      "Canada": "كندا", "Central African Republic": "جمهورية أفريقيا الوسطى", "Chad": "تشاد",
+      "Chile": "شيلي", "China": "الصين", "Colombia": "كولومبيا", "Comoros": "جزر القمر",
+      "Congo (Congo-Brazzaville)": "الكونغو", "Costa Rica": "كوستاريكا", "Croatia": "كرواتيا",
+      "Cuba": "كوبا", "Cyprus": "قبرص", "Czechia (Czech Republic)": "التشيك", "Denmark": "الدنمارك",
+      "Djibouti": "جيبوتي", "Dominica": "دومينيكا", "Dominican Republic": "جمهورية الدومينيكان",
+      "Ecuador": "الإكوادور", "Egypt": "مصر", "El Salvador": "السلفادور", "Equatorial Guinea": "غينيا الاستوائية",
+      "Eritrea": "إريتريا", "Estonia": "إستونيا", "Eswatini": "إسواتيني", "Ethiopia": "إثيوبيا",
+      "Fiji": "فيجي", "Finland": "فنلندا", "France": "فرنسا", "Gabon": "الغابون", "Gambia": "غامبيا",
+      "Georgia": "جورجيا", "Germany": "ألمانيا", "Ghana": "غانا", "Greece": "اليونان", "Grenada": "غرينادا",
+      "Guatemala": "غواتيمالا", "Guinea": "غينيا", "Guinea-Bissau": "غينيا بيساو", "Guyana": "غويانا",
+      "Haiti": "هايتي", "Honduras": "هندوراس", "Hungary": "المجر", "Iceland": "آيسلندا", "India": "الهند",
+      "Indonesia": "إندونيسيا", "Iran": "إيران", "Iraq": "العراق", "Ireland": "أيرلندا", "Italy": "إيطاليا",
+      "Jamaica": "جامايكا", "Japan": "اليابان", "Jordan": "الأردن", "Kazakhstan": "كازاخستان",
+      "Kenya": "كينيا", "Kiribati": "كيريباتي", "Korea, North": "كوريا الشمالية", "Korea, South": "كوريا الجنوبية",
+      "Kosovo": "كوسوفو", "Kuwait": "الكويت", "Kyrgyzstan": "قيرغيزستان", "Laos": "لاوس",
+      "Latvia": "لاتفيا", "Lebanon": "لبنان", "Lesotho": "ليسوتو", "Liberia": "ليبيريا", "Libya": "ليبيا",
+      "Liechtenstein": "ليختنشتاين", "Lithuania": "ليتوانيا", "Luxembourg": "لوكسمبورغ",
+      "Madagascar": "مدغشقر", "Malawi": "مالاوي", "Malaysia": "ماليزيا", "Maldives": "جزر المالديف",
+      "Mali": "مالي", "Malta": "مالطا", "Marshall Islands": "جزر مارشال", "Mauritania": "موريتانيا",
+      "Mauritius": "موريشيوس", "Mexico": "المكسيك", "Micronesia": "ميكرونيزيا", "Moldova": "مولدوفا",
+      "Monaco": "موناكو", "Mongolia": "منغوليا", "Montenegro": "الجبل الأسود", "Morocco": "المغرب",
+      "Mozambique": "موزمبيق", "Myanmar (Burma)": "ميانمار", "Namibia": "ناميبيا", "Nauru": "ناورو",
+      "Nepal": "نيبال", "Netherlands": "هولندا", "New Zealand": "نيوزيلندا", "Nicaragua": "نيكاراغوا",
+      "Niger": "النيجر", "Nigeria": "نيجيريا", "North Macedonia": "مقدونيا الشمالية", "Norway": "النرويج",
+      "Oman": "عمان", "Pakistan": "باكستان", "Palau": "بالاو", "Palestine": "فلسطين", "Panama": "بنما",
+      "Papua New Guinea": "بابوا غينيا الجديدة", "Paraguay": "باراغواي", "Peru": "بيرو",
+      "Philippines": "الفلبين", "Poland": "بولندا", "Portugal": "البرتغال", "Qatar": "قطر",
+      "Romania": "رومانيا", "Russia": "روسيا", "Rwanda": "رواندا", "Saint Kitts and Nevis": "سانت كيتس ونيفيس",
+      "Saint Lucia": "سانت لوسيا", "Saint Vincent and the Grenadines": "سانت فينسنت والغرينادين",
+      "Samoa": "ساموا", "San Marino": "سان مارينو", "Sao Tome and Principe": "ساو تومي وبرينسيب",
+      "Saudi Arabia": "المملكة العربية السعودية", "Senegal": "السنغال", "Serbia": "صربيا",
+      "Seychelles": "سيشل", "Sierra Leone": "سيراليون", "Singapore": "سنغافورة", "Slovakia": "سلوفاكيا",
+      "Slovenia": "سلوفينيا", "Solomon Islands": "جزر سليمان", "Somalia": "الصومال",
+      "South Africa": "جنوب أفريقيا", "South Sudan": "جنوب السودان", "Spain": "إسبانيا",
+      "Sri Lanka": "سريلانكا", "Sudan": "السودان", "Suriname": "سورينام", "Sweden": "السويد",
+      "Switzerland": "سويسرا", "Syria": "سوريا", "Taiwan": "تايوان", "Tajikistan": "طاجيكستان",
+      "Tanzania": "تنزانيا", "Thailand": "تايلاند", "Timor-Leste": "تيمور الشرقية", "Togo": "توغو",
+      "Tonga": "تونغا", "Trinidad and Tobago": "ترينيداد وتوباغو", "Tunisia": "تونس", "Turkey": "تركيا",
+      "Turkmenistan": "تركمانستان", "Tuvalu": "توفالو", "Uganda": "أوغندا", "Ukraine": "أوكرانيا",
+      "United Arab Emirates": "الإمارات العربية المتحدة", "United Kingdom": "المملكة المتحدة",
+      "United States": "الولايات المتحدة", "Uruguay": "أوروغواي", "Uzbekistan": "أوزبكستان",
+      "Vanuatu": "فانواتو", "Vatican City": "الفاتيكان", "Venezuela": "فنزويلا", "Vietnam": "فيتنام",
+      "Yemen": "اليمن", "Zambia": "زامبيا", "Zimbabwe": "زيمبابوي",
+    };
+
+    function translateCountry(name) {
+      if (currentLang !== "ar") return name;
+      return countryTranslations[name] || name;
+    }
+
     // ─── UI Update Function ──────────────────────────────────────────────
     function updateUI() {
+      const displayCity = currentCity; // Add city translations if needed
+      const displayCountry = translateCountry(currentCountry);
+
       document.getElementById("settingsPanelTitle").textContent = currentLang === "ar" ? "الإعدادات" : "Settings";
       document.getElementById("languageSettingTitle").textContent = currentLang === "ar" ? "اللغة" : "Language";
       document.getElementById("themeSettingTitle").textContent = currentLang === "ar" ? "الوضع" : "Theme";
@@ -1470,9 +1532,9 @@
         ? "هذا الموقع يعمل على HTTP. انشره على HTTPS (مثل GitHub Pages) لتفعيل تحديد الموقع التلقائي."
         : "This site is running on HTTP. Deploy to HTTPS (like GitHub Pages) to enable live location detection.";
 
-      document.title = currentLang === "ar" ? `موعد الاستيقاظ – ${currentCity}` : `Wake-up Time – ${currentCity}`;
-      document.getElementById("siteTitle").innerHTML = currentLang === "ar" ? `موعد الاستيقاظ <span id="siteCity">– ${currentCity}</span>` : `Wake-up Time <span id="siteCity">– ${currentCity}</span>`;
-      document.getElementById("siteCity").textContent = `– ${currentCity}`;
+      document.title = currentLang === "ar" ? `موعد الاستيقاظ – ${displayCity}` : `Wake-up Time – ${displayCity}`;
+      document.getElementById("siteTitle").innerHTML = currentLang === "ar" ? `موعد الاستيقاظ <span id="siteCity">– ${displayCity}</span>` : `Wake-up Time <span id="siteCity">– ${displayCity}</span>`;
+      document.getElementById("siteCity").textContent = `– ${displayCity}`;
 
       document.getElementById("wakeupLabel").textContent = currentLang === "ar" ? "موعد استيقاظك غداً" : "Your Wake-up Time Tomorrow";
       document.getElementById("settingsBtn").title = currentLang === "ar" ? "الإعدادات" : "Settings";
@@ -1559,9 +1621,9 @@
           year: 'numeric'
         });
         const hijriParts = hijriFormatter.formatToParts(now);
-        const hijriDay   = hijriParts.find(p => p.type === 'day')?.value   || '';
+        const hijriDay   = toArabicNumerals(hijriParts.find(p => p.type === 'day')?.value   || '');
         const hijriMonth = hijriParts.find(p => p.type === 'month')?.value || '';
-        const hijriYear  = hijriParts.find(p => p.type === 'year')?.value  || '';
+        const hijriYear  = toArabicNumerals(hijriParts.find(p => p.type === 'year')?.value  || '');
         const formattedHijri = `${dayName}، ${hijriDay} ${hijriMonth} ${hijriYear} هـ`;
 
         // 2. Full Gregorian Date in Arabic
@@ -1571,9 +1633,9 @@
           year: 'numeric'
         });
         const gregParts = gregFormatter.formatToParts(now);
-        const gregDay   = gregParts.find(p => p.type === 'day')?.value   || '';
+        const gregDay   = toArabicNumerals(gregParts.find(p => p.type === 'day')?.value   || '');
         const gregMonth = gregParts.find(p => p.type === 'month')?.value || '';
-        const gregYear  = gregParts.find(p => p.type === 'year')?.value  || '';
+        const gregYear  = toArabicNumerals(gregParts.find(p => p.type === 'year')?.value  || '');
         const formattedGregorian = `${dayName}، ${gregDay} ${gregMonth} ${gregYear}`;
 
         document.getElementById('fullHijriDate').innerText = formattedHijri;
@@ -1607,7 +1669,7 @@
       const formattedIshaForNote = formatTime(ishaTimeForNote, true, false);
       const formattedWakeupForNote = formatTime(wakeupTime, true, false);
       document.getElementById("wakeupNote").innerHTML = currentLang === "ar" ?
-        `<span>${formattedWakeupForNote}</span> + ${convertToArabicNumerals(WAKEUP_OFFSET_HOURS)} ساعات و ${convertToArabicNumerals(WAKEUP_OFFSET_MINUTES)} دقيقة` :
+        `<span>${formattedWakeupForNote}</span> + ${toArabicNumerals(WAKEUP_OFFSET_HOURS)} ساعات و ${toArabicNumerals(WAKEUP_OFFSET_MINUTES)} دقيقة` :
         `<span>${formattedWakeupForNote}</span> + ${WAKEUP_OFFSET_HOURS} hours and ${WAKEUP_OFFSET_MINUTES} minutes`;
 
       if (countdownInterval) clearInterval(countdownInterval);
@@ -1637,9 +1699,9 @@
       const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
       // Use Arabic numerals only in Arabic mode
-      const hoursText = currentLang === "ar" ? convertToArabicNumerals(hours) : hours;
-      const minutesText = currentLang === "ar" ? convertToArabicNumerals(minutes) : minutes;
-      const secondsText = currentLang === "ar" ? convertToArabicNumerals(seconds) : seconds;
+      const hoursText = toArabicNumerals(hours);
+      const minutesText = toArabicNumerals(minutes);
+      const secondsText = toArabicNumerals(seconds);
 
       document.getElementById("countdownHours").textContent = hoursText;
       document.getElementById("countdownMinutes").textContent = minutesText;
@@ -1658,27 +1720,45 @@
     function formatTime(date, includeAmPm = true, useArabicNumerals = true) {
       let hours = date.getHours();
       let minutes = date.getMinutes();
-      const ampm = hours >= 12 ? (currentLang === "ar" ? "م" : "PM") : (currentLang === "ar" ? "ص" : "AM");
+      const ampm = hours >= 12 ? (currentLang === "ar" ? "م" : "PM") : (currentLang === "ar" ? "AM" : "AM"); // Fix for getAmPm logic consistency
       hours = hours % 12;
       hours = hours ? hours : 12;
       minutes = minutes < 10 ? "0" + minutes : minutes;
 
-      // Use Arabic numerals only in Arabic mode
-      const shouldUseArabicNumerals = useArabicNumerals && currentLang === "ar";
-      const formattedHours = shouldUseArabicNumerals ? convertToArabicNumerals(hours) : hours;
-      const formattedMinutes = shouldUseArabicNumerals ? convertToArabicNumerals(minutes) : minutes;
+      let formattedHours = hours;
+      let formattedMinutes = minutes;
+      
+      if (useArabicNumerals && currentLang === "ar") {
+        formattedHours = toArabicNumerals(hours);
+        formattedMinutes = toArabicNumerals(minutes);
+      }
 
-      return `${formattedHours}:${formattedMinutes}${includeAmPm ? ` ${ampm}` : ""}`;
+      const displayAmPm = includeAmPm ? ` ${getAmPm(date)}` : "";
+      return `${formattedHours}:${formattedMinutes}${displayAmPm}`;
     }
 
     function getAmPm(date) {
       const hours = date.getHours();
-      return hours >= 12 ? (currentLang === "ar" ? "م" : "PM") : (currentLang === "ar" ? "ص" : "AM");
+      if (currentLang === "ar") {
+        return hours >= 12 ? "م" : "ص";
+      }
+      return hours >= 12 ? "PM" : "AM";
     }
 
     const arabicNumerals = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+    /**
+     * Converts numbers and time strings to Eastern Arabic numerals if currentLang is 'ar'.
+     * @param {string|number} value - The value to convert.
+     * @returns {string} - The converted string.
+     */
+    function toArabicNumerals(value) {
+      if (currentLang !== "ar") return String(value);
+      return String(value).replace(/\d/g, d => arabicNumerals[d]);
+    }
+
+    // Keep for backward compatibility if needed, but toArabicNumerals is the new standard
     function convertToArabicNumerals(number) {
-      return String(number).split("").map(digit => arabicNumerals[parseInt(digit)]).join("");
+      return toArabicNumerals(number);
     }
 
     // ─── Geolocation and Initialization Logic ─────────────────────────────
