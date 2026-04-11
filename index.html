@@ -1679,8 +1679,9 @@
       const ishaTimeForNote = new Date(now.getFullYear(), now.getMonth(), now.getDate(), ...prayerTimes.Isha.split(":").map(Number));
       const formattedIshaForNote = formatTime(ishaTimeForNote, true, false);
       const formattedWakeupForNote = formatTime(wakeupTime, true, false);
+      const wakeupNoteTime = toArabicNumerals(formattedWakeupForNote);
       document.getElementById("wakeupNote").innerHTML = currentLang === "ar" ?
-        `<span>${formattedWakeupForNote}</span> + ${toArabicNumerals(WAKEUP_OFFSET_HOURS)} ساعات و ${toArabicNumerals(WAKEUP_OFFSET_MINUTES)} دقيقة` :
+        `<span>${wakeupNoteTime}</span> + ${toArabicNumerals(WAKEUP_OFFSET_HOURS)} ساعات و ${toArabicNumerals(WAKEUP_OFFSET_MINUTES)} دقيقة` :
         `<span>${formattedWakeupForNote}</span> + ${WAKEUP_OFFSET_HOURS} hours and ${WAKEUP_OFFSET_MINUTES} minutes`;
 
       if (countdownInterval) clearInterval(countdownInterval);
